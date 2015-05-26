@@ -14,7 +14,7 @@ ahven-update: ahven
 	perl -i~ -lpe 's|external [(]"OS_VERSION", "[^"]"[)];|external ("OS_VERSION");|' ahven/gnat/ahven*.gpr
 
 opentoken:
-	if [ ! -d opentoken ]; then ( rm -f opentoken && wget --output-document=- http://stephe-leake.org/ada/opentoken-6.0b.tar.bz2 | tar xjv && mv org.opentoken-6.0b opentoken ); fi
+	if [ ! -d opentoken ]; then ( rm -f opentoken && wget --output-document=- http://stephe-leake.org/ada/opentoken-6.0b.tar.bz2 | tar xjv && mv org.opentoken-6.0b opentoken && perl -i -lpe 's/^(procedure|function|package)/pragma Warnings (Off);\npragma Style_Checks (Off);\n$$1/;' opentoken/*.ad[sb] opentoken/*/*.ad[sb] ); fi
 
 .PHONY: ahven-update
 

@@ -29,4 +29,5 @@ obj/*.o
 
 # Generated executables:
 bin/demo
+bin/test_ada_lexer
 
