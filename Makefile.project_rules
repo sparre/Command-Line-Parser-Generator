@@ -1,0 +1,20 @@
+ifndef OS_VERSION
+   $(error Ahven needs you to set OS_VERSION to either "unix" or "windows".)
+else
+   export OS_VERSION
+endif
+
+ahven:
+	if [ ! -d ahven ]; then ( rm -f ahven && hg clone https://bitbucket.org/tkoskine/ahven ); fi
+	perl -i~ -lpe 's|external [(]"OS_VERSION", "[^"]"[)];|external ("OS_VERSION");|' ahven/gnat/ahven*.gpr
+	mkdir -p tests/results
+
+ahven-update: ahven
+	cd ahven && hg pull && hg update && hg revert --all
+	perl -i~ -lpe 's|external [(]"OS_VERSION", "[^"]"[)];|external ("OS_VERSION");|' ahven/gnat/ahven*.gpr
+
+opentoken:
+	if [ ! -d opentoken ]; then ( rm -f opentoken && wget --output-document=- http://stephe-leake.org/ada/opentoken-6.0b.tar.bz2 | tar xjv && mv org.opentoken-6.0b opentoken ); fi
+
+.PHONY: ahven-update
+

@@ -2,7 +2,8 @@ PROJECT=command_line_parser_generator
 
 GENERATED_EXECUTABLES=bin/demo
 
-GENERATED_SOURCES=
+GENERATED_SOURCES=ahven \
+                  opentoken
 
 SCRIPTS=
 

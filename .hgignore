@@ -21,6 +21,7 @@ obj/*.ad[sb].metrix
 
 # Generated source files:
 src/mercurial.ads
+opentoken/
 
 # Generated object files:
 obj/*.ali
