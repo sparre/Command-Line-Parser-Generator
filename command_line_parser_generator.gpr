@@ -9,7 +9,7 @@ project Command_Line_Parser_Generator is
                         "opentoken/Examples/Language_Lexer_Examples/");
 
    for Main use ("demo",
-                 "test_ada_lexer");
+                 "parse_package");
 
    package Builder  renames Ada_2012.Builder;
    package Compiler renames Ada_2012.Compiler;
