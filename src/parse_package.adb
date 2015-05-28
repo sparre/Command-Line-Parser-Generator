@@ -1,5 +1,6 @@
---  Copyright (C) 1999, 2008 Christoph Karl Walter Grein (based on an OpenToken example)
---  Copyright (C) 2015 Jacob Sparre Andersen
+--  Copyright 1999, 2008, Christoph Karl Walter Grein
+--                        (based on an OpenToken example)
+--  Copyright 2015 Jacob Sparre Andersen
 
 pragma License (Modified_GPL);
 
