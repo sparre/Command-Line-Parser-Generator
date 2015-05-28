@@ -1,7 +1,7 @@
 PROJECT=command_line_parser_generator
 
 GENERATED_EXECUTABLES=bin/demo \
-                      bin/test_ada_lexer
+                      bin/parse_package
 
 GENERATED_SOURCES=ahven \
                   opentoken
