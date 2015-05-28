@@ -15,6 +15,8 @@ begin
           (Analyzer => Analyzer,
            Table    => LALR_Generators.Generate
                          (Grammar              => Grammar,
+                          Trace                => False,
+                          Put_Parse_Table      => False,
                           Ignore_Unused_Tokens => True));
    begin
       LALR_Parsers.Parse (Parser);
