@@ -24,8 +24,11 @@ with OpenToken.Production,
      OpenToken.Text_Feeder.Text_IO,
      OpenToken.Token.Enumerated,
      OpenToken.Token.Enumerated.Analyzer,
+     OpenToken.Token.Enumerated.Identifier,
      OpenToken.Token.Enumerated.List,
      OpenToken.Token.Enumerated.Nonterminal;
+
+with Dotted_Identifier_Token;
 
 package Simple_Package_Syntax is
    type Token_IDs is
@@ -110,6 +113,16 @@ package Simple_Package_Syntax is
      new Master_Token.List;
    package Nonterminal is
      new Master_Token.Nonterminal (Token_List => Token_List);
+
+   package Identifiers is
+     new Master_Token.Identifier;
+   package Dotted_Identifiers is
+     new Dotted_Identifier_Token (Token       => Master_Token,
+                                  Token_List  => Token_List,
+                                  Nonterminal => Nonterminal,
+                                  Identifier  => Identifiers,
+                                  Dot_ID      => Dot_T);
+
    package Production is
      new OpenToken.Production (Token       => Master_Token,
                                Token_List  => Token_List,
