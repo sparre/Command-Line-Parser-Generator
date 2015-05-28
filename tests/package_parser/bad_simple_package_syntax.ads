@@ -1,0 +1,1 @@
+../../src/simple_package_syntax.ads
