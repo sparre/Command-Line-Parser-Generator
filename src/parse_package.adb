@@ -1,35 +1,24 @@
---  Copyright 1999, 2008, Christoph Karl Walter Grein
---                        (based on an OpenToken example)
---  Copyright 2015 Jacob Sparre Andersen
+with Ada.Text_IO;
 
-pragma License (Modified_GPL);
-
-with Ada.Command_Line,
-     Ada.Text_IO;
-
-with Ada_Lexer;
-
-with Simple_Package_Syntax; pragma Unreferenced (Simple_Package_Syntax);
+with Simple_Package_Syntax;
 
 procedure Parse_Package is
-   use type Ada_Lexer.Ada_Token;
-
-   File : Ada.Text_IO.File_Type;
+   use Ada.Text_IO;
 begin
-   Ada.Text_IO.Open (File => File,
-                     Mode => Ada.Text_IO.In_File,
-                     Name => Ada.Command_Line.Argument (1));
+   Put_Line ("Parsing standard input ...");
 
-   Ada_Lexer.Set_Input_Feeder (File);
-   Ada_Lexer.Bad_Token_on_Syntax_Error;
+   declare
+      use Simple_Package_Syntax;
 
-   loop
-      Ada_Lexer.Find_Next;
+      Parser : LALR_Parsers.Instance :=
+        LALR_Parsers.Initialize
+          (Analyzer => Analyzer,
+           Table    => LALR_Generators.Generate
+                         (Grammar              => Grammar,
+                          Ignore_Unused_Tokens => True));
+   begin
+      LALR_Parsers.Parse (Parser);
+   end;
 
-      Ada.Text_IO.Put_Line
-        (Item => Ada_Lexer.Ada_Token'Image (Ada_Lexer.Token_ID) & ' ' &
-                 Ada_Lexer.Lexeme);
-
-      exit when Ada_Lexer.Token_ID = Ada_Lexer.End_of_File_T;
-   end loop;
+   Put_Line ("Passed.");
 end Parse_Package;

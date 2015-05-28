@@ -1,0 +1,36 @@
+#! /bin/bash
+#-----------------------------------------------------------------------------
+
+if cd "$(dirname "$0")" ; then
+   true
+else
+   echo "Can not make '$(dirname "$0")' the current directory." 1>&2
+   exit 100
+fi
+
+#-----------------------------------------------------------------------------
+
+rm -f errors
+
+for package in good_*.ads ; do
+   ../../bin/parse_package < "${package}" \
+     1>"${package}.log" \
+     2>"${package}.errors"
+   result=$?
+
+   if [ ${result} -ne 0 ]; then
+      echo "Failed to parse '${package}'." >> errors
+   else
+      rm -f "${package}.log" \
+            "${package}.errors"
+   fi
+done
+
+#-----------------------------------------------------------------------------
+
+if [ -f errors ]; then
+   cat errors
+   exit $(wc -l < errors ; rm -f errors)
+fi
+
+#-----------------------------------------------------------------------------
