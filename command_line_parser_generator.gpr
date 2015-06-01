@@ -6,9 +6,11 @@ project Command_Line_Parser_Generator is
    for Source_Dirs use ("src/",
                         "opentoken/",
                         "opentoken/Language_Lexers/",
+                        "opentoken/Examples/ASU_Example_5_10/",
                         "opentoken/Examples/Language_Lexer_Examples/");
 
    for Main use ("demo",
+                 "parse_dotted_identifier",
                  "parse_package");
 
    package Builder  renames Ada_2012.Builder;

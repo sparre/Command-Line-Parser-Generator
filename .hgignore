@@ -27,7 +27,12 @@ opentoken/
 obj/*.ali
 obj/*.o
 
+# OpenToken example executables:
+bin/asu_example_5_10_lr-run
+bin/test_ada_lexer
+
 # Generated executables:
 bin/demo
+bin/parse_dotted_identifier
 bin/parse_package
 

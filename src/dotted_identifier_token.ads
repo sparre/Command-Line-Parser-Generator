@@ -11,7 +11,9 @@ generic
    with package Token_List  is new Token.List;
    with package Nonterminal is new Token.Nonterminal (Token_List);
    with package Identifier  is new Token.Identifier;
-   Dot_ID : Token.Token_ID;
+   Dotted_Identifier_ID : Token.Token_ID;
+   Identifier_ID        : Token.Token_ID;
+   Dot_ID               : Token.Token_ID;
 package Dotted_Identifier_Token is
    type Instance is new Nonterminal.Instance with private;
    subtype Class is Instance'Class;
@@ -30,6 +32,8 @@ package Dotted_Identifier_Token is
    Join_Dotted_Identifiers : constant Nonterminal.Synthesize;
    --  Valid for a token list consisting of two identifiers/dotted
    --  identifiers separated by a dot.
+   Undotted_Identifier     : constant Nonterminal.Synthesize;
+   --  Valid for a token list consisting of a single identifier.
 private
    type Instance is new Nonterminal.Instance with
       record
@@ -39,8 +43,13 @@ private
    procedure Synthesize_Join (New_Token :    out Nonterminal.Class;
                               Source    : in     Token_List.Instance'Class;
                               To_ID     : in     Token.Token_ID);
+   procedure Synthesize_Copy (New_Token :    out Nonterminal.Class;
+                              Source    : in     Token_List.Instance'Class;
+                              To_ID     : in     Token.Token_ID);
 
    Join_Dotted_Identifiers : constant Nonterminal.Synthesize :=
                                Synthesize_Join'Access;
+   Undotted_Identifier     : constant Nonterminal.Synthesize :=
+                               Synthesize_Copy'Access;
 
 end Dotted_Identifier_Token;
