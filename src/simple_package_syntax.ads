@@ -117,11 +117,13 @@ package Simple_Package_Syntax is
    package Identifiers is
      new Master_Token.Identifier;
    package Dotted_Identifiers is
-     new Dotted_Identifier_Token (Token       => Master_Token,
-                                  Token_List  => Token_List,
-                                  Nonterminal => Nonterminal,
-                                  Identifier  => Identifiers,
-                                  Dot_ID      => Dot_T);
+     new Dotted_Identifier_Token (Token                => Master_Token,
+                                  Token_List           => Token_List,
+                                  Nonterminal          => Nonterminal,
+                                  Identifier           => Identifiers,
+                                  Dotted_Identifier_ID => Dotted_Identifier_T,
+                                  Identifier_ID        => Identifier_T,
+                                  Dot_ID               => Dot_T);
 
    package Production is
      new OpenToken.Production (Token       => Master_Token,
@@ -142,7 +144,7 @@ package Simple_Package_Syntax is
      new LALRs.Parser (First_Parser_Label => 1,
                        Parser_Lists       => Parser_Lists);
 
-   pragma Style_Checks ("M170"); --  nice table format
+   pragma Style_Checks ("M180"); --  nice table format
 
    Syntax : constant Tokenizer.Syntax :=
      (Abort_T               => Tokenizer.Get (OpenToken.Recognizer.Keyword.Get ("abort")),
@@ -269,7 +271,7 @@ package Simple_Package_Syntax is
    Dot                    : constant Master_Token.Class := Master_Token.Get (Dot_T);
    EOF                    : constant Master_Token.Class := Master_Token.Get (End_Of_File_T);
    End_Keyword            : constant Master_Token.Class := Master_Token.Get (End_T);
-   Identifier             : constant Master_Token.Class := Master_Token.Get (Identifier_T);
+   Identifier             : constant Identifiers.Instance'Class := Identifiers.Get (Identifier_T);
    In_Keyword             : constant Master_Token.Class := Master_Token.Get (In_T);
    Integer_Constant       : constant Master_Token.Class := Master_Token.Get (Integer_T);
    Is_Keyword             : constant Master_Token.Class := Master_Token.Get (Is_T);
@@ -285,7 +287,7 @@ package Simple_Package_Syntax is
    Bad_Token                    : constant Nonterminal.Class := Nonterminal.Get (Bad_Token_T);
    Compilation_Unit             : constant Nonterminal.Class := Nonterminal.Get (Compilation_Unit_T);
    Default_Value                : constant Nonterminal.Class := Nonterminal.Get (Default_Value_T);
-   Dotted_Identifier            : constant Nonterminal.Class := Nonterminal.Get (Dotted_Identifier_T);
+   Dotted_Identifier            : constant Dotted_Identifiers.Class := Dotted_Identifiers.Get (Dotted_Identifier_T);
    Enumeration_Constant         : constant Nonterminal.Class := Nonterminal.Get (Enumeration_Constant_T);
    Formal_Parameter_Declaration : constant Nonterminal.Class := Nonterminal.Get (Formal_Parameter_Declaration_T);
    Numeric_Constant             : constant Nonterminal.Class := Nonterminal.Get (Numeric_Constant_T);
@@ -306,19 +308,19 @@ package Simple_Package_Syntax is
    use type Production_List.Instance;
 
    Grammar : constant Production_List.Instance :=
-     Compilation_Unit             <=                Package_Specification & EOF + Nonterminal.Synthesize_Self and
-     Compilation_Unit             <= With_Clauses & Package_Specification & EOF + Nonterminal.Synthesize_Self and
-     With_Clauses                 <= With_Clause                + Nonterminal.Synthesize_Self and
-     With_Clauses                 <= With_Clause & With_Clauses + Nonterminal.Synthesize_Self and
-     With_Clause                  <= With_Keyword & Package_Name_List & Semicolon + Nonterminal.Synthesize_Self and
-     Package_Name_List            <= Package_Name                             + Nonterminal.Synthesize_Self and
-     Package_Name_List            <= Package_Name & Comma & Package_Name_List + Nonterminal.Synthesize_Self and
+     Compilation_Unit             <=                Package_Specification & EOF and
+     Compilation_Unit             <= With_Clauses & Package_Specification & EOF and
+     With_Clauses                 <= With_Clause                and
+     With_Clauses                 <= With_Clause & With_Clauses and
+     With_Clause                  <= With_Keyword & Package_Name_List & Semicolon and
+     Package_Name_List            <= Package_Name                             and
+     Package_Name_List            <= Package_Name & Comma & Package_Name_List and
      Package_Name                 <= Dotted_Identifier and
-     Dotted_Identifier            <= Identifier                           + Nonterminal.Synthesize_Self and
-     Dotted_Identifier            <= Identifier & Dot & Dotted_Identifier + Nonterminal.Synthesize_Self and
+     Dotted_Identifier            <= Dotted_Identifier & Dot & Identifier + Dotted_Identifiers.Join_Dotted_Identifiers and
+     Dotted_Identifier            <= Identifier and
      Package_Specification        <= Package_Keyword & Package_Name & Is_Keyword &
-                                        Procedure_Specification_List &
-                                     End_Keyword & Package_Name & Semicolon + Nonterminal.Synthesize_Self and
+     Procedure_Specification_List &
+     End_Keyword & Package_Name & Semicolon + Nonterminal.Synthesize_Self and
      Procedure_Specification_List <= Procedure_Specification                                + Nonterminal.Synthesize_Self and
      Procedure_Specification_List <= Procedure_Specification & Procedure_Specification_List + Nonterminal.Synthesize_Self and
      Procedure_Specification      <= Procedure_Keyword & Identifier &                                                         Semicolon + Nonterminal.Synthesize_Self and

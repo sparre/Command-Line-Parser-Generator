@@ -1,0 +1,1 @@
+../../src/dotted_identifier_syntax.ads

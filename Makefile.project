@@ -1,6 +1,7 @@
 PROJECT=command_line_parser_generator
 
 GENERATED_EXECUTABLES=bin/demo \
+                      bin/parse_dotted_identifier \
                       bin/parse_package
 
 GENERATED_SOURCES=ahven \
