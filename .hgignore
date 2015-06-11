@@ -15,6 +15,9 @@ tests/*/*.output
 # Generated test executables:
 
 # Test output to clean up:
+*.adt
+*.ali
+*.log
 
 # Output from source text metric analysis:
 obj/*.ad[sb].metrix
@@ -27,5 +30,6 @@ obj/*.ali
 obj/*.o
 
 # Generated executables:
+bin/asis_experiment
 bin/demo
 

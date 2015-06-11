@@ -1,6 +1,7 @@
 PROJECT=command_line_parser_generator
 
-GENERATED_EXECUTABLES=bin/demo
+GENERATED_EXECUTABLES=bin/asis_experiment \
+                      bin/demo
 
 GENERATED_SOURCES=ahven
 
