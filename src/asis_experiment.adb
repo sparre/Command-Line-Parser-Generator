@@ -85,10 +85,20 @@ begin
             Put_Line (Item => "Source text:");
             New_Line;
             Put_Line (Item => Element_Image (Declaration));
+            New_Line;
+
+            Put_Line (Item => "Name: " &
+                              Defining_Name_Image (Names (Declaration) (1)));
+
+            New_Line;
          elsif Declaration_Kind (Declaration) = A_Function_Declaration then
-            Put_Line (Item => "Functions are not allowed in the visible " &
-                        "part of the package specification.  """ &
-                        Element_Image (Declaration) & """ is an error.");
+            Put_Line
+              (File => Standard_Error,
+               Item => "Functions are not allowed in the visible part of " &
+                       "the package specification.");
+            Put_Line
+              (File => Standard_Error,
+               Item => """" & Element_Image (Declaration) & """ is an error.");
             Set_Exit_Status (Failure);
             return;
          else
