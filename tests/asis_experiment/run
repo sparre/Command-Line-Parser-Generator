@@ -1,0 +1,77 @@
+#! /bin/bash
+#-----------------------------------------------------------------------------
+#--  Working directory:
+
+if cd "$(dirname "$0")" ; then
+   true
+else
+   echo "Can not work from the proper directory." 1>&2
+   exit 100
+fi
+
+#-----------------------------------------------------------------------------
+#--  Clean up:
+
+rm -f ../../*.adt
+rm -f ../../*.ali
+rm -f ../../examples/*.adt
+rm -f ../../examples/*.ali
+
+#-----------------------------------------------------------------------------
+
+error_counter="$(mktemp)"
+
+for file in ../../examples/*.ads ; do
+   name=$(basename ${file} .ads)
+
+   if [ "${name##bad_}" = "${name}" ]; then
+      expected_result=good
+   else
+      expected_result=bad
+   fi
+
+   ( cd ../.. && ./bin/asis_experiment ${name} ) \
+     1>${name}.log \
+     2>${name}.errors
+   result=$?
+
+   if   [ ${result} -eq 0 -a ${expected_result} = bad  ]; then
+      echo . >> "${error_counter}"
+
+      echo "'${name}' passed while expected to fail."
+   elif [ ${result} -ne 0 -a ${expected_result} = good ]; then
+      echo . >> "${error_counter}"
+
+      echo "'${name}' failed while expected to pass."
+   fi
+
+   if [ -f ${name}.log.expected ]; then
+      if diff --brief ${name}.log.expected ${name}.log 1>/dev/null ; then
+         true
+      else
+         echo . >> "${error_counter}"
+
+         echo "Mismatch in expected output from analysing '${name}':"
+         diff -u ${name}.log.expected ${name}.log
+         echo
+      fi
+   fi
+
+   if [ -f ${name}.errors.expected ]; then
+      if diff --brief ${name}.errors.expected ${name}.errors 1>/dev/null ; then
+         true
+      else
+         echo . >> "${error_counter}"
+
+         echo "Mismatch in expected error messages from analysing '${name}':"
+         diff -u ${name}.errors.expected ${name}.errors
+         echo
+      fi
+   fi
+done
+
+#-----------------------------------------------------------------------------
+
+exit $(cat "${error_counter}" | wc -l ; rm -f "${error_counter}")
+
+#-----------------------------------------------------------------------------

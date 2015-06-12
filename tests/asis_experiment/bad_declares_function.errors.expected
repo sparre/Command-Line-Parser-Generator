@@ -1,0 +1,2 @@
+Functions are not allowed in the visible part of the package specification.
+"   function Help_Text return String;" is an error.
