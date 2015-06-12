@@ -6,6 +6,6 @@ begin
    Asis.Implementation.Initialize ("");
    Asis.Ada_Environments.Associate (The_Context => Context,
                                     Name        => "CLPG",
-                                    Parameters  => "-CA -FM -Isrc");
+                                    Parameters  => "-CA -FM -Isrc -Iexamples");
    Asis.Ada_Environments.Open (The_Context => Context);
 end Setup;
