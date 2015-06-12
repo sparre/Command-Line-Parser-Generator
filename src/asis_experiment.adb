@@ -138,12 +138,35 @@ begin
                               Set_Exit_Status (Failure);
                               return;
                            when Not_A_Mode =>
-                              Put_Line
-                                (File => Standard_Error,
-                                 Item => "ASIS error.");
+                              Put_Line (File => Standard_Error,
+                                        Item => "ASIS error.");
                               Set_Exit_Status (Failure);
                               return;
                         end case;
+
+                        Check_For_Default_Value :
+                        declare
+                           use all type Asis.Element_Kinds;
+
+                           Value : constant Asis.Expression :=
+                                     Initialization_Expression (Parameter);
+                        begin
+                           case Element_Kind (Value) is
+                              when Not_An_Element =>
+                                 null; --  No default value.
+                              when An_Expression =>
+                                 Put      (Item => "   [ Default value: ");
+                                 Put      (Item => Element_Image (Value));
+                                 Put_Line (Item => " ]");
+                              when others =>
+                                 Put_Line (File => Standard_Error,
+                                           Item => Debug_Image (Value));
+                                 Put_Line (File => Standard_Error,
+                                           Item => "ASIS error.");
+                                 Set_Exit_Status (Failure);
+                                 return;
+                           end case;
+                        end Check_For_Default_Value;
                      end loop;
                   end loop;
 
