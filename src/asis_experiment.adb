@@ -99,6 +99,12 @@ begin
 
                   for Parameter of Parameters loop
                      Put_Line (Item => Element_Image (Parameter));
+
+                     for Name of Names (Parameter) loop
+                        Put      (Item => "   [ Parameter name: ");
+                        Put      (Item => Defining_Name_Image (Name));
+                        Put_Line (Item => " ]");
+                     end loop;
                   end loop;
 
                   Put_Line (Item => ")");
