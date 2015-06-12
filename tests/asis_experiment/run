@@ -43,11 +43,15 @@ for file in ../../examples/*.ads ; do
       echo . >> "${error_counter}"
 
       echo "'${name}' failed while expected to pass."
+   elif [ "${VERBOSE}" = "true" ]; then
+      echo "Got the expected result for '${name}'."
    fi
 
    if [ -f ${name}.log.expected ]; then
       if diff --brief ${name}.log.expected ${name}.log 1>/dev/null ; then
-         true
+         if [ "${VERBOSE}" = "true" ]; then
+            echo "Output for '${name}' matched expectations."
+         fi
       else
          echo . >> "${error_counter}"
 
@@ -55,11 +59,15 @@ for file in ../../examples/*.ads ; do
          diff -u ${name}.log.expected ${name}.log
          echo
       fi
+   elif [ "${VERBOSE}" = "true" ]; then
+      echo "No expected output for '${name}'."
    fi
 
    if [ -f ${name}.errors.expected ]; then
       if diff --brief ${name}.errors.expected ${name}.errors 1>/dev/null ; then
-         true
+         if [ "${VERBOSE}" = "true" ]; then
+            echo "Error messages for '${name}' matched expectations."
+         fi
       else
          echo . >> "${error_counter}"
 
@@ -67,6 +75,8 @@ for file in ../../examples/*.ads ; do
          diff -u ${name}.errors.expected ${name}.errors
          echo
       fi
+   elif [ "${VERBOSE}" = "true" ]; then
+      echo "No expected error messages for '${name}'."
    fi
 done
 
