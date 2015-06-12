@@ -73,8 +73,8 @@ begin
          if Declaration_Kind (Declaration) = A_Procedure_Declaration then
             Put_Line (Item => Element_Image (Declaration));
             New_Line;
-            Put_Line (Item => "procedure");
-            Put_Line (Item => Defining_Name_Image (Names (Declaration) (1)));
+            Put      (Item => "procedure ");
+            Put      (Item => Defining_Name_Image (Names (Declaration) (1)));
 
             Show_Parameters :
             declare
@@ -83,38 +83,30 @@ begin
                Parameters : constant Asis.Parameter_Specification_List :=
                               Parameter_Profile (Declaration);
             begin
-               if Parameters'Length > 0 then
-                  Put_Line (Item => "(");
+               if Parameters'Length = 0 then
+                  Put_Line (Item => ";");
+               else
+                  New_Line;
+                  Put_Line (Item => "  (");
 
                   for Parameter of Parameters loop
-                     Put_Line (Item => Element_Image (Parameter));
-
                      for Name of Names (Parameter) loop
-                        Put      (Item => "   [ Parameter name: ");
-                        Put      (Item => Defining_Name_Image (Name));
-                        Put_Line (Item => " ]");
-
-                        if Has_Aliased (Parameter) then
-                           Put_Line (Item => "   [ Modifier: aliased ]");
-                           Put_Line
-                             (File => Standard_Error,
-                              Item => "Aliased parameters not allowed.");
-                           Set_Exit_Status (Failure);
-                           return;
-                        end if;
+                        Put (Item => "     ");
+                        Put (Item => Defining_Name_Image (Name));
+                        Put (Item => " : ");
 
                         case Mode_Kind (Parameter) is
                            when A_Default_In_Mode | An_In_Mode =>
-                              Put_Line (Item => "   [ Mode: in     ]");
+                              Put (Item => "in     ");
                            when An_In_Out_Mode =>
-                              Put_Line (Item => "   [ Mode: in out ]");
+                              Put (Item => "in out ");
                               Put_Line
                                 (File => Standard_Error,
                                  Item => "Out parameters not allowed.");
                               Set_Exit_Status (Failure);
                               return;
                            when An_Out_Mode =>
-                              Put_Line (Item => "   [ Mode:    out ]");
+                              Put (Item => "   out ");
                               Put_Line
                                 (File => Standard_Error,
                                  Item => "Out parameters not allowed.");
@@ -127,6 +119,24 @@ begin
                               return;
                         end case;
 
+                        if Has_Aliased (Parameter) then
+                           Put_Line (Item => "aliased");
+                           Put_Line
+                             (File => Standard_Error,
+                              Item => "Aliased parameters not allowed.");
+                           Set_Exit_Status (Failure);
+                           return;
+                        end if;
+
+                        declare
+                           Type_Of_Parameter : Asis.Declaration;
+                        begin
+                           Type_Of_Parameter :=
+                             Object_Declaration_View (Parameter);
+
+                           Put (Item => Element_Image (Type_Of_Parameter));
+                        end;
+
                         Check_For_Default_Value :
                         declare
                            use all type Asis.Element_Kinds;
@@ -138,9 +148,8 @@ begin
                               when Not_An_Element =>
                                  null; --  No default value.
                               when An_Expression =>
-                                 Put      (Item => "   [ Default value: ");
-                                 Put      (Item => Element_Image (Value));
-                                 Put_Line (Item => " ]");
+                                 Put (Item => " := ");
+                                 Put (Item => Element_Image (Value));
                               when others =>
                                  Put_Line (File => Standard_Error,
                                            Item => Debug_Image (Value));
@@ -150,12 +159,13 @@ begin
                                  return;
                            end case;
                         end Check_For_Default_Value;
+
+                        Put_Line (Item => ";");
                      end loop;
                   end loop;
 
-                  Put_Line (Item => ")");
+                  Put_Line (Item => "  );");
                end if;
-               Put_Line (Item => ";");
             end Show_Parameters;
 
             New_Line;
