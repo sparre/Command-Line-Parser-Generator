@@ -68,19 +68,33 @@ begin
 
    Visible_Declaration_Elements :
    declare
-      use Ada.Wide_Text_IO;
+      use Ada.Command_Line, Ada.Wide_Text_IO;
       use Asis.Declarations, Asis.Elements, Asis.Text;
+      use all type Asis.Declaration_Kinds;
       Declarations : constant Asis.Declarative_Item_List :=
                        Visible_Part_Declarative_Items (Package_Declaration);
    begin
       Put_Line (Item => "Visible declarations:");
+      New_Line;
 
       for Declaration of Declarations loop
-         Put_Line (Item => Debug_Image (Declaration));
-         New_Line;
-         Put_Line (Item => "Source text:");
-         New_Line;
-         Put_Line (Item => Element_Image (Declaration));
+         if Declaration_Kind (Declaration) = A_Procedure_Declaration then
+            Put_Line (Item => "Procedure declaration:");
+            Put_Line (Item => Debug_Image (Declaration));
+            New_Line;
+            Put_Line (Item => "Source text:");
+            New_Line;
+            Put_Line (Item => Element_Image (Declaration));
+         elsif Declaration_Kind (Declaration) = A_Function_Declaration then
+            Put_Line (Item => "Functions are not allowed in the visible " &
+                        "part of the package specification.  """ &
+                        Element_Image (Declaration) & """ is an error.");
+            Set_Exit_Status (Failure);
+            return;
+         else
+            Put_Line ("""" & Element_Image (Declaration) & """ is ignored.");
+         end if;
+
          New_Line;
       end loop;
    end Visible_Declaration_Elements;
