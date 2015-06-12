@@ -16,6 +16,18 @@ Build and test
     make test
 
 
+Examples
+--------
+
+The project comes with some examples (located in the `examples/` directory).
+The program `asis_experiment` can be used to analyse them:
+
+    ./bin/asis_experiment bad_declares_function
+
+Notice that `asis_experiment` contains hard-coded relative paths, which means
+that it only looks for source files in `examples/` and `src/`.
+
+
 Links
 -----
 
