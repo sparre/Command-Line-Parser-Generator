@@ -86,9 +86,25 @@ begin
             New_Line;
             Put_Line (Item => Element_Image (Declaration));
             New_Line;
+            Put_Line (Item => "procedure");
+            Put_Line (Item => Defining_Name_Image (Names (Declaration) (1)));
 
-            Put_Line (Item => "Name: " &
-                              Defining_Name_Image (Names (Declaration) (1)));
+            Show_Parameters :
+            declare
+               Parameters : constant Asis.Parameter_Specification_List :=
+                              Parameter_Profile (Declaration);
+            begin
+               if Parameters'Length > 0 then
+                  Put_Line (Item => "(");
+
+                  for Parameter of Parameters loop
+                     Put_Line (Item => Element_Image (Parameter));
+                  end loop;
+
+                  Put_Line (Item => ")");
+               end if;
+               Put_Line (Item => ";");
+            end Show_Parameters;
 
             New_Line;
          elsif Declaration_Kind (Declaration) = A_Function_Declaration then
