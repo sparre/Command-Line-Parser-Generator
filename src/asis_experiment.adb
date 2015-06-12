@@ -54,7 +54,7 @@ begin
    Show_Package_Declaration :
    declare
       use Ada.Wide_Text_IO;
-      use Asis.Elements, Asis.Text;
+      use Asis.Declarations, Asis.Elements, Asis.Text;
    begin
       Package_Declaration := Unit_Declaration (Compilation_Unit);
 
@@ -63,6 +63,10 @@ begin
       Put_Line (Item => "Package declaration source text:");
       New_Line;
       Put_Line (Item => Element_Image (Package_Declaration));
+      New_Line;
+      Put      (Item => "package ");
+      Put      (Item => Defining_Name_Image (Names (Package_Declaration) (1)));
+      Put_Line (Item => " ...");
       New_Line;
    end Show_Package_Declaration;
 
@@ -106,6 +110,15 @@ begin
                         Put      (Item => "   [ Parameter name: ");
                         Put      (Item => Defining_Name_Image (Name));
                         Put_Line (Item => " ]");
+
+                        if Has_Aliased (Parameter) then
+                           Put_Line (Item => "   [ Modifier: aliased ]");
+                           Put_Line
+                             (File => Standard_Error,
+                              Item => "Aliased parameters not allowed.");
+                           Set_Exit_Status (Failure);
+                           return;
+                        end if;
 
                         case Mode_Kind (Parameter) is
                            when A_Default_In_Mode | An_In_Mode =>
