@@ -50,16 +50,19 @@ begin
       Put_Line (Item => Debug_Image (Compilation_Unit));
    end Check_For_Package;
 
-   Package_Declaration := Asis.Elements.Unit_Declaration (Compilation_Unit);
+   Show_Package_Declaration :
+   declare
+      use Ada.Wide_Text_IO;
+      use Asis.Elements, Asis.Text;
+   begin
+      Package_Declaration := Unit_Declaration (Compilation_Unit);
 
-   Ada.Wide_Text_IO.Put_Line
-     (Item => Asis.Elements.Debug_Image (Package_Declaration));
-   Ada.Wide_Text_IO.Put_Line
-     (Item => "Package source text:");
-   Ada.Wide_Text_IO.New_Line;
-   Ada.Wide_Text_IO.Put_Line
-     (Item => Asis.Text.Element_Image (Package_Declaration));
-   Ada.Wide_Text_IO.New_Line;
+      Put_Line (Item => Debug_Image (Package_Declaration));
+      Put_Line (Item => "Package source text:");
+      New_Line;
+      Put_Line (Item => Element_Image (Package_Declaration));
+      New_Line;
+   end Show_Package_Declaration;
 
    Asis.Ada_Environments.Close (The_Context => Context);
    Asis.Ada_Environments.Dissociate (The_Context => Context);
