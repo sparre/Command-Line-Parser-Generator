@@ -7,6 +7,7 @@ with Asis,
      Asis.Compilation_Units,
      Asis.Declarations,
      Asis.Elements,
+     Asis.Expressions,
      Asis.Implementation,
      Asis.Text;
 
@@ -129,11 +130,23 @@ begin
                         end if;
 
                         declare
+                           use Asis.Compilation_Units, Asis.Expressions;
+                           use all type Asis.Definition_Kinds;
+
                            Type_Of_Parameter : Asis.Declaration;
+                           Full_Type         : Asis.Element;
+                           CU_Of_Type        : Asis.Compilation_Unit;
                         begin
                            Type_Of_Parameter :=
                              Object_Declaration_View (Parameter);
+                           Full_Type := Corresponding_Name_Declaration
+                                          (Type_Of_Parameter);
+                           CU_Of_Type := Enclosing_Compilation_Unit
+                                           (Full_Type);
 
+                           Put (Item => Defining_Name_Image
+                                  (Names (Unit_Declaration (CU_Of_Type)) (1)));
+                           Put (Item => ".");
                            Put (Item => Element_Image (Type_Of_Parameter));
                         end;
 
