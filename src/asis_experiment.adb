@@ -32,8 +32,7 @@ begin
 
       case Unit_Kind (Compilation_Unit) is
          when A_Package =>
-            Put_Line (Item => """" & To_Wide_String (Argument (1)) &
-                        """ is a package. :-)");
+            null; --  Good.  We continue.
          when An_Unknown_Unit =>
             Put_Line (File => Standard_Error,
                       Item => "No semantic information available for """ &
@@ -47,8 +46,6 @@ begin
             Set_Exit_Status (Failure);
             return;
       end case;
-
-      Put_Line (Item => Debug_Image (Compilation_Unit));
    end Check_For_Package;
 
    Show_Package_Declaration :
@@ -58,15 +55,9 @@ begin
    begin
       Package_Declaration := Unit_Declaration (Compilation_Unit);
 
-      Put_Line (Item => Debug_Image (Package_Declaration));
-      New_Line;
-      Put_Line (Item => "Package declaration source text:");
-      New_Line;
-      Put_Line (Item => Element_Image (Package_Declaration));
-      New_Line;
       Put      (Item => "package ");
       Put      (Item => Defining_Name_Image (Names (Package_Declaration) (1)));
-      Put_Line (Item => " ...");
+      Put_Line (Item => " is");
       New_Line;
    end Show_Package_Declaration;
 
@@ -78,16 +69,8 @@ begin
       Declarations : constant Asis.Declarative_Item_List :=
                        Visible_Part_Declarative_Items (Package_Declaration);
    begin
-      Put_Line (Item => "Visible declarations:");
-      New_Line;
-
       for Declaration of Declarations loop
          if Declaration_Kind (Declaration) = A_Procedure_Declaration then
-            Put_Line (Item => "Procedure declaration:");
-            Put_Line (Item => Debug_Image (Declaration));
-            New_Line;
-            Put_Line (Item => "Source text:");
-            New_Line;
             Put_Line (Item => Element_Image (Declaration));
             New_Line;
             Put_Line (Item => "procedure");
