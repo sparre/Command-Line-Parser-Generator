@@ -91,6 +91,8 @@ begin
 
             Show_Parameters :
             declare
+               use all type Asis.Mode_Kinds;
+
                Parameters : constant Asis.Parameter_Specification_List :=
                               Parameter_Profile (Declaration);
             begin
@@ -104,6 +106,31 @@ begin
                         Put      (Item => "   [ Parameter name: ");
                         Put      (Item => Defining_Name_Image (Name));
                         Put_Line (Item => " ]");
+
+                        case Mode_Kind (Parameter) is
+                           when A_Default_In_Mode | An_In_Mode =>
+                              Put_Line (Item => "   [ Mode: in     ]");
+                           when An_In_Out_Mode =>
+                              Put_Line (Item => "   [ Mode: in out ]");
+                              Put_Line
+                                (File => Standard_Error,
+                                 Item => "Out parameters not allowed.");
+                              Set_Exit_Status (Failure);
+                              return;
+                           when An_Out_Mode =>
+                              Put_Line (Item => "   [ Mode:    out ]");
+                              Put_Line
+                                (File => Standard_Error,
+                                 Item => "Out parameters not allowed.");
+                              Set_Exit_Status (Failure);
+                              return;
+                           when Not_A_Mode =>
+                              Put_Line
+                                (File => Standard_Error,
+                                 Item => "ASIS error.");
+                              Set_Exit_Status (Failure);
+                              return;
+                        end case;
                      end loop;
                   end loop;
 
