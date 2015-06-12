@@ -5,6 +5,7 @@ with Ada.Characters.Handling,
 with Asis,
      Asis.Ada_Environments,
      Asis.Compilation_Units,
+     Asis.Declarations,
      Asis.Elements,
      Asis.Implementation,
      Asis.Text;
@@ -58,11 +59,31 @@ begin
       Package_Declaration := Unit_Declaration (Compilation_Unit);
 
       Put_Line (Item => Debug_Image (Package_Declaration));
-      Put_Line (Item => "Package source text:");
+      New_Line;
+      Put_Line (Item => "Package declaration source text:");
       New_Line;
       Put_Line (Item => Element_Image (Package_Declaration));
       New_Line;
    end Show_Package_Declaration;
+
+   Visible_Declaration_Elements :
+   declare
+      use Ada.Wide_Text_IO;
+      use Asis.Declarations, Asis.Elements, Asis.Text;
+      Declarations : constant Asis.Declarative_Item_List :=
+                       Visible_Part_Declarative_Items (Package_Declaration);
+   begin
+      Put_Line (Item => "Visible declarations:");
+
+      for Declaration of Declarations loop
+         Put_Line (Item => Debug_Image (Declaration));
+         New_Line;
+         Put_Line (Item => "Source text:");
+         New_Line;
+         Put_Line (Item => Element_Image (Declaration));
+         New_Line;
+      end loop;
+   end Visible_Declaration_Elements;
 
    Asis.Ada_Environments.Close (The_Context => Context);
    Asis.Ada_Environments.Dissociate (The_Context => Context);
