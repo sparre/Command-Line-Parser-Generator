@@ -5,13 +5,16 @@ with Ada.Characters.Handling,
 with Asis,
      Asis.Ada_Environments,
      Asis.Compilation_Units,
-     Asis.Implementation;
+     Asis.Elements,
+     Asis.Implementation,
+     Asis.Text;
 
 with Setup;
 
 procedure ASIS_Experiment is
-   Context          : Asis.Context;
-   Compilation_Unit : Asis.Compilation_Unit;
+   Context             : Asis.Context;
+   Compilation_Unit    : Asis.Compilation_Unit;
+   Package_Declaration : Asis.Declaration;
 begin
    Setup (Context => Context);
 
@@ -44,9 +47,19 @@ begin
             return;
       end case;
 
-      Put_Line
-        ("'" & Asis.Compilation_Units.Debug_Image (Compilation_Unit) & "'");
+      Put_Line (Item => Debug_Image (Compilation_Unit));
    end Check_For_Package;
+
+   Package_Declaration := Asis.Elements.Unit_Declaration (Compilation_Unit);
+
+   Ada.Wide_Text_IO.Put_Line
+     (Item => Asis.Elements.Debug_Image (Package_Declaration));
+   Ada.Wide_Text_IO.Put_Line
+     (Item => "Package source text:");
+   Ada.Wide_Text_IO.New_Line;
+   Ada.Wide_Text_IO.Put_Line
+     (Item => Asis.Text.Element_Image (Package_Declaration));
+   Ada.Wide_Text_IO.New_Line;
 
    Asis.Ada_Environments.Close (The_Context => Context);
    Asis.Ada_Environments.Dissociate (The_Context => Context);
