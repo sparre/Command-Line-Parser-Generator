@@ -141,6 +141,7 @@ begin
                              Object_Declaration_View (Parameter);
                            Full_Type := Corresponding_Name_Declaration
                                           (Type_Of_Parameter);
+                           --  Use AdaControl.Simple_Name (Type_Of_Parameter)
                            CU_Of_Type := Enclosing_Compilation_Unit
                                            (Full_Type);
 
@@ -198,6 +199,11 @@ begin
 
          New_Line;
       end loop;
+   exception
+      when others =>
+         Put_Line (Standard_Error,
+                   Asis.Implementation.Diagnosis);
+         raise;
    end Visible_Declaration_Elements;
 
    Asis.Ada_Environments.Close (The_Context => Context);
