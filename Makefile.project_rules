@@ -13,5 +13,11 @@ ahven-update: ahven
 	cd ahven && hg pull && hg update && hg revert --all
 	perl -i~ -lpe 's|external [(]"OS_VERSION", "[^"]"[)];|external ("OS_VERSION");|' ahven/gnat/ahven*.gpr
 
+adacontrol:
+	wget --timestamping https://sourceforge.net/projects/adacontrol/files/adactl-1.16r11-src.tgz
+	tar xzvf adactl-1.16r11-src.tgz
+	rm -f    adactl-1.16r11-src.tgz
+	mv       adactl-1.16r11         adacontrol
+
 .PHONY: ahven-update
 

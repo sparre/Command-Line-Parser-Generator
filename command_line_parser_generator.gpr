@@ -6,7 +6,7 @@ with "asis";
 
 project Command_Line_Parser_Generator is
    for Source_Dirs use ("src/",
-                        "/home/sparre/Ada/Ekstern_kode/AdaControl/adactl-1.16r11/src/");
+                        "adacontrol/src/");
 
    for Main use ("asis_experiment",
                  "demo");
