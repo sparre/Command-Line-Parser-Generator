@@ -11,6 +11,8 @@ with Asis,
      Asis.Implementation,
      Asis.Text;
 
+with Thick_Queries;
+
 with Setup;
 
 procedure ASIS_Experiment is
@@ -140,8 +142,7 @@ begin
                            Type_Of_Parameter :=
                              Object_Declaration_View (Parameter);
                            Full_Type := Corresponding_Name_Declaration
-                                          (Type_Of_Parameter);
-                           --  Use AdaControl.Simple_Name (Type_Of_Parameter)
+                             (Thick_Queries.Simple_Name (Type_Of_Parameter));
                            CU_Of_Type := Enclosing_Compilation_Unit
                                            (Full_Type);
 
