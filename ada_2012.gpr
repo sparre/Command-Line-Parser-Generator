@@ -17,7 +17,7 @@ abstract project Ada_2012 is
              "-gnatwa",                     --  All optional warnings
              "-gnatVa",                     --  All validity checks
              "-gnaty3abcdefhiklmnoOprstux", --  Style checks
---           "-gnatwe",                     --  Treat warnings as errors
+             "-gnatwe",                     --  Treat warnings as errors
              "-gnat2012",                   --  Use Ada 2012
              "-Wall",                       --  All GCC warnings
              "-O2");                        --  Optimise (level 2/3)
