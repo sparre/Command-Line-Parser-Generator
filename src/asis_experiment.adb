@@ -1,6 +1,5 @@
 with Ada.Characters.Handling,
      Ada.Command_Line,
-     Ada.Strings.Wide_Fixed,
      Ada.Wide_Text_IO;
 
 with Asis,
@@ -14,16 +13,11 @@ with Asis,
 
 with Thick_Queries;
 
-with Setup;
+with Generate_Reader,
+     Setup,
+     Trim;
 
 procedure ASIS_Experiment is
-   function Trim (Item : in Wide_String) return Wide_String;
-   function Trim (Item : in Wide_String) return Wide_String is
-      use Ada.Strings;
-   begin
-      return Wide_Fixed.Trim (Item, Both);
-   end Trim;
-
    Context             : Asis.Context;
    Compilation_Unit    : Asis.Compilation_Unit;
    Package_Declaration : Asis.Declaration;
@@ -159,6 +153,8 @@ begin
                            Put (Item => ".");
                            Put (Item => Trim (Element_Image
                                                 (Type_Of_Parameter)));
+
+                           Generate_Reader (For_Type => Type_Of_Parameter);
                         end;
 
                         Check_For_Default_Value :
