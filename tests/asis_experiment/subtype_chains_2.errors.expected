@@ -1,0 +1,2 @@
+Warning: "   subtype Two is Subtype_Chains_1.One
+     with Dynamic_Predicate => Two mod 2 = 0;" is ignored.

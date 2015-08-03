@@ -1,26 +1,5 @@
 package Using_An_Enumeration is
 
-"   type Choices is (Interactive, Batch, Service);" is ignored.
-
-   procedure Run (Mode : in Choices := Interactive);
-
-procedure Run
-  (
-     Mode : in     Using_An_Enumeration.Choices
-----------------------
-with Ada.Command_Line,
-     Ada.Text_IO;
-with Using_An_Enumeration;
-procedure Reader is
-   use Ada.Command_Line, Ada.Text_IO;
-   O : constant Using_An_Enumeration.Choices := Using_An_Enumeration.Choices'Value (Argument (1));
-begin
-   Put_Line ("Using_An_Enumeration.Choices: " & Using_An_Enumeration.Choices'Image (O));
-end Reader;
-----------------------
- := Interactive;
-  );
-
-
 procedure Run (Mode : in     Using_An_Enumeration.Choices := Interactive);
 
+end Using_An_Enumeration;
