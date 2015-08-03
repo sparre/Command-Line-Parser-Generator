@@ -1,0 +1,9 @@
+package Good_Example is
+
+   procedure No_Arguments;
+
+procedure No_Arguments;
+
+
+procedure No_Arguments;
+

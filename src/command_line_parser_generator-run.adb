@@ -12,6 +12,7 @@ with Asis,
 
 with Command_Line_Parser_Generator.Formal_Parameter,
      Command_Line_Parser_Generator.Procedure_Declaration,
+     Command_Line_Parser_Generator.Procedure_Declaration_List,
      Command_Line_Parser_Generator.Setup,
      Command_Line_Parser_Generator.Utilities;
 
@@ -20,6 +21,7 @@ procedure Command_Line_Parser_Generator.Run is
    Compilation_Unit    : Asis.Compilation_Unit;
    Package_Declaration : Asis.Declaration;
 
+   Profiles    : Procedure_Declaration_List.Instance;
    A_Procedure : Procedure_Declaration.Instance;
 begin
    Setup (Context => Context);
@@ -191,6 +193,16 @@ begin
 
                         Put_Line (Item => ";");
 
+                        Image_And_Value_Functions :
+                        declare
+                           use type Source_Text;
+                        begin
+                           A_Formal_Parameter.Image_Function :=
+                             A_Formal_Parameter.Type_Name & "'Image";
+                           A_Formal_Parameter.Value_Function :=
+                             A_Formal_Parameter.Type_Name & "'Value";
+                        end Image_And_Value_Functions;
+
                         A_Procedure.Formal_Parameters.Append
                           (A_Formal_Parameter);
                      end loop;
@@ -202,7 +214,7 @@ begin
 
             New_Line;
 
-            Put_Line ("Procedure image: """ & A_Procedure.Image & """");
+            Profiles.Append (A_Procedure);
          elsif Declaration_Kind (Declaration) = A_Function_Declaration then
             Put_Line
               (File => Standard_Error,
@@ -219,6 +231,8 @@ begin
 
          New_Line;
       end loop;
+
+      Put_Line (Profiles.Image);
    exception
       when others =>
          Put_Line (Standard_Error,
