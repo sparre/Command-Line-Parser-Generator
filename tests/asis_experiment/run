@@ -35,6 +35,12 @@ for file in ../../examples/*.ads ; do
      2>${name}.errors
    result=$?
 
+   (
+      buffer="$(mktemp)"
+      egrep -v '^ASIS warning:|^Asis[.]Ada_Environments[.]Open: body is not compiled for ' ${name}.errors > "${buffer}"
+      mv "${buffer}" ${name}.errors
+   )
+
    if   [ ${result} -eq 0 -a ${expected_result} = bad  ]; then
       echo . >> "${error_counter}"
 
