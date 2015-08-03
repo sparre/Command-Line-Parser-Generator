@@ -16,9 +16,10 @@ begin
    Put_Line ("Ada.Strings.Trim_End: " & Ada.Strings.Trim_End'Image (O));
 end Reader;
 ----------------------
- :=                                                    Ada.Strings.Both;
+ := Ada.Strings.Both;
   );
 
+Procedure image: "Trim (Sides : in     Ada.Strings.Trim_End := Ada.Strings.Both);"
 
 "   use all type Ada.Strings.Trim_End;" is ignored.
 
@@ -52,7 +53,8 @@ begin
    Put_Line ("Ada.Strings.Trim_End: " & Ada.Strings.Trim_End'Image (O));
 end Reader;
 ----------------------
- :=                                                          Both;
+ := Both;
   );
 
+Procedure image: "Trim_More (Prefix : in     Standard.String; Side : in     Ada.Strings.Trim_End := Both);"
 
