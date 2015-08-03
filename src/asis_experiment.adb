@@ -7,13 +7,10 @@ with Asis,
      Asis.Compilation_Units,
      Asis.Declarations,
      Asis.Elements,
-     Asis.Expressions,
      Asis.Implementation,
      Asis.Text;
 
-with Thick_Queries;
-
-with Defining_Name,
+with Full_Defining_Name,
      Generate_Reader,
      Setup;
 
@@ -134,24 +131,10 @@ begin
                         end if;
 
                         declare
-                           use Asis.Compilation_Units, Asis.Expressions;
-                           use all type Asis.Definition_Kinds;
-
-                           Type_Of_Parameter : Asis.Declaration;
-                           Full_Type         : Asis.Element;
-                           CU_Of_Type        : Asis.Compilation_Unit;
-                        begin
-                           Type_Of_Parameter :=
+                           Type_Of_Parameter : constant Asis.Declaration :=
                              Object_Declaration_View (Parameter);
-                           Full_Type := Corresponding_Name_Declaration
-                             (Thick_Queries.Simple_Name (Type_Of_Parameter));
-                           CU_Of_Type := Enclosing_Compilation_Unit
-                                           (Full_Type);
-
-                           Put (Item => Defining_Name (Unit_Declaration
-                                                         (CU_Of_Type)));
-                           Put (Item => ".");
-                           Put (Item => Defining_Name (Full_Type));
+                        begin
+                           Put (Full_Defining_Name (Type_Of_Parameter));
 
                            Generate_Reader (For_Type => Type_Of_Parameter);
                         end;
