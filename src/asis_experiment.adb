@@ -13,9 +13,9 @@ with Asis,
 
 with Thick_Queries;
 
-with Generate_Reader,
-     Setup,
-     Trim;
+with Defining_Name,
+     Generate_Reader,
+     Setup;
 
 procedure ASIS_Experiment is
    Context             : Asis.Context;
@@ -148,11 +148,10 @@ begin
                            CU_Of_Type := Enclosing_Compilation_Unit
                                            (Full_Type);
 
-                           Put (Item => Defining_Name_Image
-                                  (Names (Unit_Declaration (CU_Of_Type)) (1)));
+                           Put (Item => Defining_Name (Unit_Declaration
+                                                         (CU_Of_Type)));
                            Put (Item => ".");
-                           Put (Item => Trim (Element_Image
-                                                (Type_Of_Parameter)));
+                           Put (Item => Defining_Name (Full_Type));
 
                            Generate_Reader (For_Type => Type_Of_Parameter);
                         end;

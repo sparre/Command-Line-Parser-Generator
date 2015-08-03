@@ -1,17 +1,14 @@
 with Ada.Wide_Text_IO;
 
-with Asis.Declarations,
-     Asis.Elements,
-     Asis.Expressions,
-     Asis.Text;
+with Asis.Elements,
+     Asis.Expressions;
 
 with Thick_Queries;
 
-with Trim;
+with Defining_Name;
 
 procedure Generate_Reader (For_Type : in     Asis.Declaration) is
-   use Asis.Declarations, Asis.Elements,
-       Asis.Expressions, Asis.Text;
+   use Asis.Elements, Asis.Expressions;
    use all type Asis.Definition_Kinds;
 
    Full_Type  : Asis.Element;
@@ -25,9 +22,9 @@ begin
       use Ada.Wide_Text_IO;
 
       Source_Name : constant Wide_String :=
-        Defining_Name_Image (Names (Unit_Declaration (CU_Of_Type)) (1));
+                      Defining_Name (Unit_Declaration (CU_Of_Type));
       Type_Name   : constant Wide_String :=
-        Source_Name & "." & Trim (Element_Image (For_Type));
+                      Source_Name & "." & Defining_Name (Full_Type);
    begin
       New_Line;
       Put_Line ("----------------------");
