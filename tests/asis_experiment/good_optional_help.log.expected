@@ -1,24 +1,5 @@
 package Good_Optional_Help is
 
-   procedure Run (Help : in Boolean := False);
-
-procedure Run
-  (
-     Help : in     Standard.Boolean
-----------------------
-with Ada.Command_Line,
-     Ada.Text_IO;
-with Standard;
-procedure Reader is
-   use Ada.Command_Line, Ada.Text_IO;
-   O : constant Standard.Boolean := Standard.Boolean'Value (Argument (1));
-begin
-   Put_Line ("Standard.Boolean: " & Standard.Boolean'Image (O));
-end Reader;
-----------------------
- := False;
-  );
-
-
 procedure Run (Help : in     Standard.Boolean := False);
 
+end Good_Optional_Help;
