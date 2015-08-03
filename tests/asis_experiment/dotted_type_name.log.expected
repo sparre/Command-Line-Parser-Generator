@@ -19,7 +19,6 @@ end Reader;
  := Ada.Strings.Both;
   );
 
-Procedure image: "Trim (Sides : in     Ada.Strings.Trim_End := Ada.Strings.Both);"
 
 "   use all type Ada.Strings.Trim_End;" is ignored.
 
@@ -56,5 +55,7 @@ end Reader;
  := Both;
   );
 
-Procedure image: "Trim_More (Prefix : in     Standard.String; Side : in     Ada.Strings.Trim_End := Both);"
+
+procedure Trim (Sides : in     Ada.Strings.Trim_End := Ada.Strings.Both);
+procedure Trim_More (Prefix : in     Standard.String; Side : in     Ada.Strings.Trim_End := Both);
 
