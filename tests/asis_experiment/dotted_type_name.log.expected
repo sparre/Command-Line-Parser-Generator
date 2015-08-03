@@ -1,0 +1,58 @@
+package Dotted_Type_Name is
+
+   procedure Trim (Sides : Ada.Strings.Trim_End := Ada.Strings.Both);
+
+procedure Trim
+  (
+     Sides : in     Ada.Strings.Trim_End
+----------------------
+with Ada.Command_Line,
+     Ada.Text_IO;
+with Ada.Strings;
+procedure Reader is
+   use Ada.Command_Line, Ada.Text_IO;
+   O : constant Ada.Strings.Trim_End := Ada.Strings.Trim_End'Value (Argument (1));
+begin
+   Put_Line ("Ada.Strings.Trim_End: " & Ada.Strings.Trim_End'Image (O));
+end Reader;
+----------------------
+ :=                                                    Ada.Strings.Both;
+  );
+
+
+"   use all type Ada.Strings.Trim_End;" is ignored.
+
+   procedure Trim_More (Prefix : String;
+                        Side   : Ada.Strings.Trim_End := Both);
+
+procedure Trim_More
+  (
+     Prefix : in     Standard.String
+----------------------
+with Ada.Command_Line,
+     Ada.Text_IO;
+with Standard;
+procedure Reader is
+   use Ada.Command_Line, Ada.Text_IO;
+   O : constant Standard.String := Standard.String'Value (Argument (1));
+begin
+   Put_Line ("Standard.String: " & Standard.String'Image (O));
+end Reader;
+----------------------
+;
+     Side : in     Ada.Strings.Trim_End
+----------------------
+with Ada.Command_Line,
+     Ada.Text_IO;
+with Ada.Strings;
+procedure Reader is
+   use Ada.Command_Line, Ada.Text_IO;
+   O : constant Ada.Strings.Trim_End := Ada.Strings.Trim_End'Value (Argument (1));
+begin
+   Put_Line ("Ada.Strings.Trim_End: " & Ada.Strings.Trim_End'Image (O));
+end Reader;
+----------------------
+ :=                                                          Both;
+  );
+
+
