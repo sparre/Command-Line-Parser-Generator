@@ -8,7 +8,7 @@ with "adacontrol/src/build";
 project Command_Line_Parser_Generator is
    for Source_Dirs use ("src/");
 
-   for Main use ("asis_experiment",
+   for Main use ("command_line_parser_generator-run",
                  "demo");
 
    package Builder  renames Ada_2012.Builder;

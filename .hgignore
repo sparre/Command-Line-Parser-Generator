@@ -34,6 +34,6 @@ obj/*.ali
 obj/*.o
 
 # Generated executables:
-bin/asis_experiment
+bin/command_line_parser_generator-run
 bin/demo
 
