@@ -14,6 +14,13 @@ package body Command_Line_Parser.Argument is
       return Equal_Keys (Left, Right) and Left.Value = Right.Value;
    end "=";
 
+   function Compose (Key   : in String;
+                     Value : in String) return Instance is
+   begin
+      return (Key   => +Key,
+              Value => +Value);
+   end Compose;
+
    function Equal_Keys (Left, Right : in Instance) return Boolean is
       use Ada.Strings.Unbounded;
    begin

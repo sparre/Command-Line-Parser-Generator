@@ -36,4 +36,5 @@ obj/*.o
 # Generated executables:
 bin/command_line_parser_generator-run
 bin/demo
+examples/generated/bin/an_application-run
 

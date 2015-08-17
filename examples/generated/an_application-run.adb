@@ -2,8 +2,6 @@ with Command_Line_Parser;
 
 procedure An_Application.Run is
    use Command_Line_Parser;
-
-   Matches : Natural := 0;
 begin
    Initialise;
 
