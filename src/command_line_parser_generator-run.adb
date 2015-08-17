@@ -14,6 +14,7 @@ with Command_Line_Parser_Generator.Formal_Parameter,
      Command_Line_Parser_Generator.Procedure_Declaration,
      Command_Line_Parser_Generator.Procedure_Declaration_List,
      Command_Line_Parser_Generator.Setup,
+     Command_Line_Parser_Generator.Templates,
      Command_Line_Parser_Generator.Utilities;
 
 procedure Command_Line_Parser_Generator.Run is
@@ -193,6 +194,9 @@ begin
       New_Line;
       Put_Line (Profiles.Image);
       Put_Line ("end " & (+Package_Name) & ";");
+
+      Templates.Create (Target_Directory => "generated");
+      Templates.Runner (Package_Name => +Package_Name);
    exception
       when others =>
          Put_Line (Standard_Error,
