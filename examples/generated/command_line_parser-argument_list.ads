@@ -1,16 +1,22 @@
-with Ada.Containers.Hashed_Sets;
+with Ada.Containers.Indefinite_Hashed_Maps,
+     Ada.Strings.Fixed.Equal_Case_Insensitive,
+     Ada.Strings.Fixed.Hash_Case_Insensitive;
 
 with Command_Line_Parser.Argument;
 
 private
 package Command_Line_Parser.Argument_List is
-   package Sets is new Ada.Containers.Hashed_Sets
-                         (Element_Type        => Argument.Instance,
-                          Equivalent_Elements => Argument.Equal_Keys,
-                          "="                 => Argument."=",
-                          Hash                => Argument.Key_Hash);
+   package Maps is
+      new Ada.Containers.Indefinite_Hashed_Maps
+            (Element_Type    => String,
+             Key_Type        => String,
+             Equivalent_Keys => Ada.Strings.Fixed.Equal_Case_Insensitive,
+             Hash            => Ada.Strings.Fixed.Hash_Case_Insensitive);
 
-   type Instance is new Sets.Set with null record;
+   type Instance is new Maps.Map with null record;
 
-   function Image (Item : in Instance) return String;
+   function Image (Container : in     Instance) return String;
+
+   procedure Insert (Container : in out Instance;
+                     New_Item  : in     Argument.Instance);
 end Command_Line_Parser.Argument_List;

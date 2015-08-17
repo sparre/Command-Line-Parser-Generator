@@ -1,9 +1,12 @@
 package Command_Line_Parser is
    function Initialised return Boolean;
 
+   pragma Warnings (Off);
+   --  GNAT 4.9.2 claims Initialised may be called before body is seen.
    procedure Initialise
      with Pre  => not Initialised,
           Post => Initialised;
+   pragma Warnings (On);
 
    function Count_Matching_Call_Profiles return Natural
      with Pre => Initialised;

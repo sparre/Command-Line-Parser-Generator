@@ -1,52 +1,74 @@
-with Ada.Command_Line;
+with Ada.Command_Line,
+     Ada.Text_IO;
 
 with Command_Line_Parser.Argument,
-     Command_Line_Parser.Argument_List;
+     Command_Line_Parser.Argument_List,
+     Command_Line_Parser.Profiles;
 
 package body Command_Line_Parser is
    Is_Initialised : Boolean := False;
    Arguments      : Argument_List.Instance;
+
+   Profile_Found : Boolean := False;
+   Profile_Index : Profiles.Index;
+
+   procedure Call_Matching_Profile is
+   begin
+      if Profile_Found then
+         Profiles.Call (Profile   => Profile_Index,
+                        Arguments => Arguments);
+      else
+         raise Program_Error
+           with "Call_Matching_Profile called without a valid profile.";
+      end if;
+   end Call_Matching_Profile;
+
+   function Count_Matching_Call_Profiles return Natural is
+      Counter : Natural := 0;
+   begin
+      for Index in Profiles.Index loop
+         if Profiles.Match (Index, Arguments) then
+            Counter := Counter + 1;
+
+            Profile_Index := Index;
+            Profile_Found := True;
+         end if;
+      end loop;
+
+      return Counter;
+   end Count_Matching_Call_Profiles;
+
+   procedure Initialise is
+      use Ada;
+   begin
+      for Index in 1 .. Command_Line.Argument_Count loop
+         Arguments.Insert (Command_Line_Parser.Argument.Value
+                             (Command_Line.Argument (Index)));
+      end loop;
+
+      Is_Initialised := True;
+   end Initialise;
 
    function Initialised return Boolean is
    begin
       return Is_Initialised;
    end Initialised;
 
-   procedure Initialise is
-      use Ada;
-   begin
-      for Index in 1 .. Command_Line.Argument_Count loop
-         Arguments.Insert
-           (Command_Line_Parser.Argument.Value (Command_Line.Argument (1)));
-      end loop;
-
-      Is_Initialised := True;
-   end Initialise;
-
-   function Count_Matching_Call_Profiles return Natural is
-   begin
-      return raise Program_Error
-        with "Count_Matching_Call_Profiles not implemented yet";
-   end Count_Matching_Call_Profiles;
-
-   procedure Call_Matching_Profile is
-   begin
-      raise Program_Error
-        with "Call_Matching_Profile not implemented yet";
-   end Call_Matching_Profile;
-
    package body Errors is
-      procedure No_Matching_Call_Profile is
-      begin
-         raise Program_Error
-           with "Errors.No_Matching_Call_Profile not implemented yet";
-      end No_Matching_Call_Profile;
-
       procedure More_Than_One_Matching_Call_Profile is
+         use Ada.Command_Line, Ada.Text_IO;
       begin
-         raise Program_Error
-           with "Errors.More_Than_One_Matching_Call_Profile " &
-                "not implemented yet";
+         Put_Line (File => Standard_Error,
+                   Item => "Ambigous command line arguments.");
+         Set_Exit_Status (Failure);
       end More_Than_One_Matching_Call_Profile;
+
+      procedure No_Matching_Call_Profile is
+         use Ada.Command_Line, Ada.Text_IO;
+      begin
+         Put_Line (File => Standard_Error,
+                   Item => "Missing or too many command line arguments.");
+         Set_Exit_Status (Failure);
+      end No_Matching_Call_Profile;
    end Errors;
 end Command_Line_Parser;
