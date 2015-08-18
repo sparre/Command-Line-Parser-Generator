@@ -15,6 +15,78 @@ package body Command_Line_Parser_Generator.Templates is
 
    function To_File_Name (Item : in Wide_String) return String;
 
+   procedure Argument_List (Package_Name : in     Wide_String) is
+      use Ada.Wide_Text_IO;
+
+      Target : File_Type;
+   begin
+      pragma Style_Checks ("-M120");
+
+      Create_Specification (Name => Package_Name & ".Command_Line_Parser.Argument_List",
+                            File => Target);
+      Put_Line (File => Target, Item => "with Ada.Containers.Indefinite_Hashed_Maps,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Equal_Case_Insensitive,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Hash_Case_Insensitive;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Argument;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "private");
+      Put_Line (File => Target, Item => "package " & Package_Name & ".Command_Line_Parser.Argument_List is");
+      Put_Line (File => Target, Item => "   package Maps is");
+      Put_Line (File => Target, Item => "      new Ada.Containers.Indefinite_Hashed_Maps");
+      Put_Line (File => Target, Item => "            (Element_Type    => String,");
+      Put_Line (File => Target, Item => "             Key_Type        => String,");
+      Put_Line (File => Target, Item => "             Equivalent_Keys => Ada.Strings.Fixed.Equal_Case_Insensitive,");
+      Put_Line (File => Target, Item => "             Hash            => Ada.Strings.Fixed.Hash_Case_Insensitive);");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   type Instance is new Maps.Map with null record;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Image (Container : in     Instance) return String;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   procedure Insert (Container : in out Instance;");
+      Put_Line (File => Target, Item => "                     New_Item  : in     Argument.Instance);");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument_List;");
+      Close (File => Target);
+
+      Create_Body (Name => Package_Name & ".Command_Line_Parser.Argument_List",
+                   File => Target);
+      Put_Line (File => Target, Item => "with Ada.Strings.Unbounded;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Argument_List is");
+      Put_Line (File => Target, Item => "   function Image (Container : in     Instance) return String is");
+      Put_Line (File => Target, Item => "      use Ada.Strings.Unbounded;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      Buffer : Unbounded_String;");
+      Put_Line (File => Target, Item => "      Index  : Maps.Cursor := Container.First;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      use type Maps.Cursor;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      while Index /= Maps.No_Element loop");
+      Put_Line (File => Target, Item => "         Append");
+      Put_Line (File => Target, Item => "           (Source   => Buffer,");
+      Put_Line (File => Target, Item => "            New_Item => "" "" & Argument.Compose");
+      Put_Line (File => Target, Item => "                                (Key   => Maps.Key (Index),");
+      Put_Line (File => Target, Item => "                                 Value => Maps.Element (Index)).Image);");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "         Maps.Next (Index);");
+      Put_Line (File => Target, Item => "      end loop;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      return To_String (Buffer);");
+      Put_Line (File => Target, Item => "   end Image;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   procedure Insert (Container : in out Instance;");
+      Put_Line (File => Target, Item => "                     New_Item  : in     Argument.Instance) is");
+      Put_Line (File => Target, Item => "      use Ada.Strings.Unbounded;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      Container.Insert (Key      => To_String (New_Item.Key),");
+      Put_Line (File => Target, Item => "                        New_Item => To_String (New_Item.Value));");
+      Put_Line (File => Target, Item => "   end Insert;");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument_List;");
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Argument_List;
+
    procedure Argument_Type (Package_Name : in     Wide_String) is
       use Ada.Wide_Text_IO;
 

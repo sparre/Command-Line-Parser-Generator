@@ -200,6 +200,7 @@ begin
       Templates.Runner        (Package_Name => +Package_Name);
       Templates.Parser        (Package_Name => +Package_Name);
       Templates.Argument_Type (Package_Name => +Package_Name);
+      Templates.Argument_List (Package_Name => +Package_Name);
    exception
       when others =>
          Put_Line (Standard_Error,
