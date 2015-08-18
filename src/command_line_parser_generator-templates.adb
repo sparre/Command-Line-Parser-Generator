@@ -15,6 +15,107 @@ package body Command_Line_Parser_Generator.Templates is
 
    function To_File_Name (Item : in Wide_String) return String;
 
+   procedure Argument_Type (Package_Name : in     Wide_String) is
+      use Ada.Wide_Text_IO;
+
+      Target : File_Type;
+   begin
+      pragma Style_Checks ("-M120");
+
+      Create_Specification (Name => Package_Name & ".Command_Line_Parser.Argument",
+                            File => Target);
+      Put_Line (File => Target, Item => "with Ada.Containers,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Unbounded;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "private");
+      Put_Line (File => Target, Item => "package " & Package_Name & ".Command_Line_Parser.Argument is");
+      Put_Line (File => Target, Item => "   type Instance is tagged");
+      Put_Line (File => Target, Item => "      record");
+      Put_Line (File => Target, Item => "         Key   : Ada.Strings.Unbounded.Unbounded_String;");
+      Put_Line (File => Target, Item => "         Value : Ada.Strings.Unbounded.Unbounded_String;");
+      Put_Line (File => Target, Item => "      end record;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   overriding");
+      Put_Line (File => Target, Item => "   function ""="" (Left, Right : in Instance) return Boolean;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Compose (Key   : in String;");
+      Put_Line (File => Target, Item => "                     Value : in String) return Instance;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Equal_Keys (Left, Right : in Instance) return Boolean;");
+      Put_Line (File => Target, Item => "   function Key_Hash (Item : in Instance) return Ada.Containers.Hash_Type;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Image (Item : in Instance) return String;");
+      Put_Line (File => Target, Item => "   function Value (Item : in String) return Instance;");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument;");
+      Close (File => Target);
+
+      Create_Body (Name => Package_Name & ".Command_Line_Parser.Argument",
+                   File => Target);
+      Put_Line (File => Target, Item => "with Ada.Strings.Fixed,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Unbounded.Equal_Case_Insensitive,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Unbounded.Hash_Case_Insensitive;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Argument is");
+      Put_Line (File => Target, Item => "   function ""+"" (Item : in String)");
+      Put_Line (File => Target, Item => "                return Ada.Strings.Unbounded.Unbounded_String");
+      Put_Line (File => Target, Item => "     renames Ada.Strings.Unbounded.To_Unbounded_String;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   overriding");
+      Put_Line (File => Target, Item => "   function ""="" (Left, Right : in Instance) return Boolean is");
+      Put_Line (File => Target, Item => "      use Ada.Strings.Unbounded;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return Equal_Keys (Left, Right) and Left.Value = Right.Value;");
+      Put_Line (File => Target, Item => "   end ""="";");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Compose (Key   : in String;");
+      Put_Line (File => Target, Item => "                     Value : in String) return Instance is");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return (Key   => +Key,");
+      Put_Line (File => Target, Item => "              Value => +Value);");
+      Put_Line (File => Target, Item => "   end Compose;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Equal_Keys (Left, Right : in Instance) return Boolean is");
+      Put_Line (File => Target, Item => "      use Ada.Strings.Unbounded;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return Equal_Case_Insensitive (Left.Key, Right.Key);");
+      Put_Line (File => Target, Item => "   end Equal_Keys;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Image (Item : in Instance) return String is");
+      Put_Line (File => Target, Item => "      use Ada.Strings.Unbounded;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return ""--"" & To_String (Item.Key) & ""="" & To_String (Item.Value);");
+      Put_Line (File => Target, Item => "   end Image;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Key_Hash (Item : in Instance) return Ada.Containers.Hash_Type is");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return Ada.Strings.Unbounded.Hash_Case_Insensitive (Item.Key);");
+      Put_Line (File => Target, Item => "   end Key_Hash;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Value (Item : in String) return Instance is");
+      Put_Line (File => Target, Item => "      use Ada.Strings.Fixed;");
+      Put_Line (File => Target, Item => "      Key_Value_Separator : Natural;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      if Head (Item, 2) = ""--"" then");
+      Put_Line (File => Target, Item => "         Key_Value_Separator := Index (Item, ""="");");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "         if Key_Value_Separator = 0 then");
+      Put_Line (File => Target, Item => "            return (Key   => +Item (Item'First + 2 .. Item'Last),");
+      Put_Line (File => Target, Item => "                    Value => +""True"");");
+      Put_Line (File => Target, Item => "         else");
+      Put_Line (File => Target, Item => "            return (Key   => +Item (Item'First + 2 .. Key_Value_Separator - 1),");
+      Put_Line (File => Target, Item => "                    Value => +Item (Key_Value_Separator + 1 .. Item'Last));");
+      Put_Line (File => Target, Item => "         end if;");
+      Put_Line (File => Target, Item => "      else");
+      Put_Line (File => Target, Item => "         raise Constraint_Error");
+      Put_Line (File => Target, Item => "           with ""Incorrect argument format.  Expected: --<key>=<value>"";");
+      Put_Line (File => Target, Item => "      end if;");
+      Put_Line (File => Target, Item => "   end Value;");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument;");
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Argument_Type;
+
    procedure Create (Target_Directory : in String) is
       use Ada.Directories;
    begin
