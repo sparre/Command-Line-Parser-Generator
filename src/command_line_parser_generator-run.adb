@@ -197,6 +197,7 @@ begin
 
       Templates.Create (Target_Directory => "generated");
       Templates.Runner (Package_Name => +Package_Name);
+      Templates.Parser (Package_Name => +Package_Name);
    exception
       when others =>
          Put_Line (Standard_Error,

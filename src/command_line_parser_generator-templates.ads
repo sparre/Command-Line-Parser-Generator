@@ -6,6 +6,7 @@ package Command_Line_Parser_Generator.Templates is
    procedure Create (Target_Directory : in String);
 
    procedure Runner (Package_Name : in     Wide_String);
+   procedure Parser (Package_Name : in     Wide_String);
 private
    procedure Create_Specification (Name : in     Wide_String;
                                    File : in out Ada.Wide_Text_IO.File_Type);
