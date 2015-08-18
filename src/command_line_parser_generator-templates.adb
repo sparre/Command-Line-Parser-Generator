@@ -4,7 +4,8 @@ with Ada.Characters.Conversions,
      Ada.Directories,
      Ada.Strings.Unbounded;
 
-with Command_Line_Parser_Generator.Procedure_Declaration;
+with Command_Line_Parser_Generator.Formal_Parameter,
+     Command_Line_Parser_Generator.Procedure_Declaration;
 
 package body Command_Line_Parser_Generator.Templates is
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
@@ -370,8 +371,42 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      case Profile is");
       for Index in Procedures.First_Index .. Procedures.Last_Index loop
          Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
-         Put_Line (File => Target, Item => "            " & Package_Name & "." & (+Procedures.Element (Index).Name) & ";");
-         --  Parameters missing.
+
+         declare
+            Profile : Procedure_Declaration.Instance renames Procedures.Element (Index);
+         begin
+            if Profile.Formal_Parameters.Is_Empty then
+               Put_Line (File => Target, Item => "            " & Package_Name & "." & (+Profile.Name) & ";");
+            elsif Profile.Number_Of_Optional_Parameters = 0 then
+               Put_Line (File => Target, Item => "            " & Package_Name & "." & (+Procedures.Element (Index).Name));
+
+               for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
+                  declare
+                     Is_First : constant Boolean := Index = Profile.Formal_Parameters.First_Index;
+                     Is_Last  : constant Boolean := Index = Profile.Formal_Parameters.Last_Index;
+                     Parameter : Formal_Parameter.Instance renames Profile.Formal_Parameters.Element (Index);
+                  begin
+                     if Is_First then
+                        Put      (File => Target, Item => "              (");
+                     else
+                        Put      (File => Target, Item => "               ");
+                     end if;
+
+                     Put      (File => Target, Item => (+Parameter.Name) & " => ");
+                     Put      (File => Target, Item => (+Parameter.Type_Name) & "'Value (Arguments.Element (""");
+                     Put      (File => Target, Item => (+Parameter.Name) & """))");
+
+                     if Is_Last then
+                        Put_Line (File => Target, Item => ");");
+                     else
+                        Put_Line (File => Target, Item => ",");
+                     end if;
+                  end;
+               end loop;
+            else
+               Put_Line (File => Target, Item => "            raise Program_Error with ""Parameter processing not implemented yet in Profiles.Call."";");
+            end if;
+         end;
       end loop;
       Put_Line (File => Target, Item => "      end case;");
       New_Line (File => Target);
