@@ -1,4 +1,4 @@
-with Command_Line_Parser;
+with An_Application.Command_Line_Parser;
 
 procedure An_Application.Run is
    use Command_Line_Parser;

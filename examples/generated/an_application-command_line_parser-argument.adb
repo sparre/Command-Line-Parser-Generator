@@ -2,7 +2,7 @@ with Ada.Strings.Fixed,
      Ada.Strings.Unbounded.Equal_Case_Insensitive,
      Ada.Strings.Unbounded.Hash_Case_Insensitive;
 
-package body Command_Line_Parser.Argument is
+package body An_Application.Command_Line_Parser.Argument is
    function "+" (Item : in String)
                 return Ada.Strings.Unbounded.Unbounded_String
      renames Ada.Strings.Unbounded.To_Unbounded_String;
@@ -57,4 +57,4 @@ package body Command_Line_Parser.Argument is
            with "Incorrect argument format.  Expected: --<key>=<value>";
       end if;
    end Value;
-end Command_Line_Parser.Argument;
+end An_Application.Command_Line_Parser.Argument;

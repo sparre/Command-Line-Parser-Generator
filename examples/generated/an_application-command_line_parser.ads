@@ -1,4 +1,4 @@
-package Command_Line_Parser is
+package An_Application.Command_Line_Parser is
    function Initialised return Boolean;
 
    pragma Warnings (Off);
@@ -21,4 +21,4 @@ package Command_Line_Parser is
       procedure More_Than_One_Matching_Call_Profile
         with Pre => Count_Matching_Call_Profiles > 1;
    end Errors;
-end Command_Line_Parser;
+end An_Application.Command_Line_Parser;

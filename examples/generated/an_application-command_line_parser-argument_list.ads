@@ -2,10 +2,10 @@ with Ada.Containers.Indefinite_Hashed_Maps,
      Ada.Strings.Fixed.Equal_Case_Insensitive,
      Ada.Strings.Fixed.Hash_Case_Insensitive;
 
-with Command_Line_Parser.Argument;
+with An_Application.Command_Line_Parser.Argument;
 
 private
-package Command_Line_Parser.Argument_List is
+package An_Application.Command_Line_Parser.Argument_List is
    package Maps is
       new Ada.Containers.Indefinite_Hashed_Maps
             (Element_Type    => String,
@@ -19,4 +19,4 @@ package Command_Line_Parser.Argument_List is
 
    procedure Insert (Container : in out Instance;
                      New_Item  : in     Argument.Instance);
-end Command_Line_Parser.Argument_List;
+end An_Application.Command_Line_Parser.Argument_List;
