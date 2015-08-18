@@ -8,7 +8,8 @@ package body An_Application.Command_Line_Parser.Profiles is
 
       case Profile is
          when 1 =>
-            An_Application.Show_Help (Help => Standard.Boolean'Value (Arguments.Element ("Help")));
+            An_Application.Show_Help
+              (Help => Standard.Boolean'Value (Arguments.Element ("Help")));
          when 2 =>
             An_Application.Run_Interactive;
       end case;
