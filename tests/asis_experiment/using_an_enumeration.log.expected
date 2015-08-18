@@ -1,5 +1,6 @@
 package Using_An_Enumeration is
 
 procedure Run (Mode : in     Using_An_Enumeration.Choices := Interactive);
+procedure Run (Configuration_File : in     Standard.String; Mode : in     Using_An_Enumeration.Choices);
 
 end Using_An_Enumeration;
