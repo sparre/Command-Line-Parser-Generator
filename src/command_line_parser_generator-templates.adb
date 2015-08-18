@@ -1,7 +1,10 @@
 with Ada.Characters.Conversions,
      Ada.Characters.Handling,
+     Ada.Containers,
      Ada.Directories,
      Ada.Strings.Unbounded;
+
+with Command_Line_Parser_Generator.Procedure_Declaration;
 
 package body Command_Line_Parser_Generator.Templates is
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
@@ -328,6 +331,113 @@ package body Command_Line_Parser_Generator.Templates is
 
       pragma Style_Checks ("-M79");
    end Parser;
+
+   procedure Profiles
+     (Package_Name : in     Wide_String;
+      Procedures   : in     Procedure_Declaration_List.Instance) is
+      use Ada.Wide_Text_IO;
+
+      Target : File_Type;
+   begin
+      pragma Style_Checks ("-M120");
+
+      Create_Specification (Name => Package_Name & ".Command_Line_Parser.Profiles",
+                            File => Target);
+      Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Argument_List;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "private");
+      Put_Line (File => Target, Item => "package " & Package_Name & ".Command_Line_Parser.Profiles is");
+      Put_Line (File => Target, Item => "   type Index is range 1 .." & Ada.Containers.Count_Type'Wide_Image (Procedures.Length) & ";");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
+      Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) return Boolean;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   procedure Call (Profile   : in     Index;");
+      Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance);");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Profiles;");
+      Close (File => Target);
+
+      Create_Body (Name => Package_Name & ".Command_Line_Parser.Profiles",
+                   File => Target);
+      Put_Line (File => Target, Item => "with Ada.Containers;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Profiles is");
+      Put_Line (File => Target, Item => "   procedure Call (Profile   : in     Index;");
+      Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) is");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      case Profile is");
+      for Index in Procedures.First_Index .. Procedures.Last_Index loop
+         Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
+         Put_Line (File => Target, Item => "            " & Package_Name & "." & (+Procedures.Element (Index).Name) & ";");
+         --  Parameters missing.
+      end loop;
+      Put_Line (File => Target, Item => "      end case;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      pragma Style_Checks (""-M79"");");
+      Put_Line (File => Target, Item => "   end Call;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
+      Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) return Boolean is");
+      Put_Line (File => Target, Item => "      use type Ada.Containers.Count_Type;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      Buffer : Argument_List.Instance := Arguments;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      case Profile is");
+      for Index in Procedures.First_Index .. Procedures.Last_Index loop
+         Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
+         declare
+            Profile        : Procedure_Declaration.Instance renames Procedures.Element (Index);
+            Has_Statements : Boolean := False;
+         begin
+            for Parameter of Profile.Formal_Parameters loop
+               if Has_Statements then
+                  New_Line (File => Target);
+               end if;
+
+               Put_Line (File => Target, Item => "            if Buffer.Contains (Key => """ & (+Parameter.Name) & """) then");
+
+               if +Parameter.Type_Name = "Standard.String" then
+                  null;
+               else
+                  Put_Line (File => Target, Item => "               declare");
+                  Put_Line (File => Target, Item => "                  Dummy : " & (+Parameter.Type_Name) & ";");
+                  Put_Line (File => Target, Item => "               begin");
+                  Put_Line (File => Target, Item => "                  Dummy := " & (+Parameter.Type_Name) & "'Value (Buffer.Element (Key => """ & (+Parameter.Name) & """));");
+                  Put_Line (File => Target, Item => "               exception");
+                  Put_Line (File => Target, Item => "                  when Constraint_Error =>");
+                  Put_Line (File => Target, Item => "                     return False;");
+                  Put_Line (File => Target, Item => "               end;");
+                  New_Line (File => Target);
+               end if;
+
+               Put_Line (File => Target, Item => "               Buffer.Delete (Key => """ & (+Parameter.Name) & """);");
+
+               if not Parameter.Has_Default_Value then
+                  Put_Line (File => Target, Item => "            else");
+                  Put_Line (File => Target, Item => "               return False;");
+               end if;
+
+               Put_Line (File => Target, Item => "            end if;");
+
+               Has_Statements := True;
+            end loop;
+
+            if not Has_Statements then
+               Put_Line (File => Target, Item => "            null;");
+            end if;
+         end;
+      end loop;
+      Put_Line (File => Target, Item => "      end case;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      return Buffer.Length = 0;");
+      Put_Line (File => Target, Item => "   end Match;");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Profiles;");
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Profiles;
 
    procedure Runner (Package_Name : in     Wide_String) is
       use Ada.Wide_Text_IO;
