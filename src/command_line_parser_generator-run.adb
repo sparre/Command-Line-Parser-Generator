@@ -195,12 +195,21 @@ begin
       Put_Line (Profiles.Image);
       Put_Line ("end " & (+Package_Name) & ";");
 
-      Templates.Create (Target_Directory => "generated");
+      if Profiles.Is_Empty then
+         Put_Line (File => Standard_Error,
+                   Item => "No procedures to call in package " &
+                             (+Package_Name) & ".");
+         Set_Exit_Status (Failure);
+      else
+         Templates.Create (Target_Directory => "generated");
 
-      Templates.Runner        (Package_Name => +Package_Name);
-      Templates.Parser        (Package_Name => +Package_Name);
-      Templates.Argument_Type (Package_Name => +Package_Name);
-      Templates.Argument_List (Package_Name => +Package_Name);
+         Templates.Runner        (Package_Name => +Package_Name);
+         Templates.Parser        (Package_Name => +Package_Name);
+         Templates.Argument_Type (Package_Name => +Package_Name);
+         Templates.Argument_List (Package_Name => +Package_Name);
+         Templates.Profiles      (Package_Name => +Package_Name,
+                                  Procedures   => Profiles);
+      end if;
    exception
       when others =>
          Put_Line (Standard_Error,
