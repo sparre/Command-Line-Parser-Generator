@@ -1,7 +1,7 @@
-with Command_Line_Parser.Argument_List;
+with An_Application.Command_Line_Parser.Argument_List;
 
 private
-package Command_Line_Parser.Profiles is
+package An_Application.Command_Line_Parser.Profiles is
    type Index is range 1 .. 2;
 
    function Match (Profile   : in     Index;
@@ -9,4 +9,4 @@ package Command_Line_Parser.Profiles is
 
    procedure Call (Profile   : in     Index;
                    Arguments : in     Argument_List.Instance);
-end Command_Line_Parser.Profiles;
+end An_Application.Command_Line_Parser.Profiles;

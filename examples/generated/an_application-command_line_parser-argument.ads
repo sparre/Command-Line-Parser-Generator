@@ -2,7 +2,7 @@ with Ada.Containers,
      Ada.Strings.Unbounded;
 
 private
-package Command_Line_Parser.Argument is
+package An_Application.Command_Line_Parser.Argument is
    type Instance is tagged
       record
          Key   : Ada.Strings.Unbounded.Unbounded_String;
@@ -20,4 +20,4 @@ package Command_Line_Parser.Argument is
 
    function Image (Item : in Instance) return String;
    function Value (Item : in String) return Instance;
-end Command_Line_Parser.Argument;
+end An_Application.Command_Line_Parser.Argument;

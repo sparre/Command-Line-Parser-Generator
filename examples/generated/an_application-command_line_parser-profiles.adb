@@ -1,8 +1,6 @@
 with Ada.Containers;
 
-with An_Application;
-
-package body Command_Line_Parser.Profiles is
+package body An_Application.Command_Line_Parser.Profiles is
    procedure Call (Profile   : in     Index;
                    Arguments : in     Argument_List.Instance) is
    begin
@@ -46,4 +44,4 @@ package body Command_Line_Parser.Profiles is
 
       return Buffer.Length = 0;
    end Match;
-end Command_Line_Parser.Profiles;
+end An_Application.Command_Line_Parser.Profiles;

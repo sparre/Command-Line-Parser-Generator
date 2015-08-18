@@ -1,11 +1,11 @@
 with Ada.Command_Line,
      Ada.Text_IO;
 
-with Command_Line_Parser.Argument,
-     Command_Line_Parser.Argument_List,
-     Command_Line_Parser.Profiles;
+with An_Application.Command_Line_Parser.Argument,
+     An_Application.Command_Line_Parser.Argument_List,
+     An_Application.Command_Line_Parser.Profiles;
 
-package body Command_Line_Parser is
+package body An_Application.Command_Line_Parser is
    Is_Initialised : Boolean := False;
    Arguments      : Argument_List.Instance;
 
@@ -71,4 +71,4 @@ package body Command_Line_Parser is
          Set_Exit_Status (Failure);
       end No_Matching_Call_Profile;
    end Errors;
-end Command_Line_Parser;
+end An_Application.Command_Line_Parser;

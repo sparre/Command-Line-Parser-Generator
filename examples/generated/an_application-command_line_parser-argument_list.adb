@@ -1,6 +1,6 @@
 with Ada.Strings.Unbounded;
 
-package body Command_Line_Parser.Argument_List is
+package body An_Application.Command_Line_Parser.Argument_List is
    function Image (Container : in     Instance) return String is
       use Ada.Strings.Unbounded;
 
@@ -29,4 +29,4 @@ package body Command_Line_Parser.Argument_List is
       Container.Insert (Key      => To_String (New_Item.Key),
                         New_Item => To_String (New_Item.Value));
    end Insert;
-end Command_Line_Parser.Argument_List;
+end An_Application.Command_Line_Parser.Argument_List;
