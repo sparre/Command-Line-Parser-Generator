@@ -27,6 +27,8 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Specification (Name => Package_Name & ".Command_Line_Parser.Argument_List",
                             File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with Ada.Containers.Indefinite_Hashed_Maps,");
       Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Equal_Case_Insensitive,");
       Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Hash_Case_Insensitive;");
@@ -49,10 +51,14 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "   procedure Insert (Container : in out Instance;");
       Put_Line (File => Target, Item => "                     New_Item  : in     Argument.Instance);");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument_List;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       Create_Body (Name => Package_Name & ".Command_Line_Parser.Argument_List",
                    File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with Ada.Strings.Unbounded;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Argument_List is");
@@ -85,6 +91,8 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "                        New_Item => To_String (New_Item.Value));");
       Put_Line (File => Target, Item => "   end Insert;");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument_List;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       pragma Style_Checks ("-M79");
@@ -99,6 +107,8 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Specification (Name => Package_Name & ".Command_Line_Parser.Argument",
                             File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with Ada.Containers,");
       Put_Line (File => Target, Item => "     Ada.Strings.Unbounded;");
       New_Line (File => Target);
@@ -122,10 +132,14 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "   function Image (Item : in Instance) return String;");
       Put_Line (File => Target, Item => "   function Value (Item : in String) return Instance;");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       Create_Body (Name => Package_Name & ".Command_Line_Parser.Argument",
                    File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with Ada.Strings.Fixed,");
       Put_Line (File => Target, Item => "     Ada.Strings.Unbounded.Equal_Case_Insensitive,");
       Put_Line (File => Target, Item => "     Ada.Strings.Unbounded.Hash_Case_Insensitive;");
@@ -186,6 +200,8 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      end if;");
       Put_Line (File => Target, Item => "   end Value;");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Argument;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       pragma Style_Checks ("-M79");
@@ -263,6 +279,8 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Specification (Name => Package_Name & ".Command_Line_Parser.Key_List",
                             File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with Ada.Containers.Indefinite_Hashed_Sets,");
       Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Equal_Case_Insensitive,");
       Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Hash_Case_Insensitive;");
@@ -288,10 +306,14 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "                 Right : in     Instance) return Boolean;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Key_List;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       Create_Body (Name => Package_Name & ".Command_Line_Parser.Key_List",
                    File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Key_List is");
       Put_Line (File => Target, Item => "   function ""+"" (Left  : in     Instance;");
       Put_Line (File => Target, Item => "                 Right : in     String) return Instance is");
@@ -321,6 +343,8 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      return Left.Length = Right.Length;");
       Put_Line (File => Target, Item => "   end ""="";");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Key_List;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       pragma Style_Checks ("-M79");
@@ -446,6 +470,7 @@ package body Command_Line_Parser_Generator.Templates is
      (Package_Name : in     Wide_String;
       Procedures   : in     Procedure_Declaration_List.Instance) is
       use Ada.Wide_Text_IO;
+      use type Ada.Containers.Count_Type;
 
       Target : File_Type;
    begin
@@ -453,6 +478,8 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Specification (Name => Package_Name & ".Command_Line_Parser.Profiles",
                             File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Argument_List;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "private");
@@ -465,10 +492,14 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "   procedure Call (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance);");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Profiles;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       Create_Body (Name => Package_Name & ".Command_Line_Parser.Profiles",
                    File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Key_List;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Profiles is");
@@ -505,58 +536,67 @@ package body Command_Line_Parser_Generator.Templates is
       New_Line (File => Target);
       Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) return Boolean is");
-      Put_Line (File => Target, Item => "      Buffer : Argument_List.Instance := Arguments;");
-      Put_Line (File => Target, Item => "   begin");
-      Put_Line (File => Target, Item => "      case Profile is");
-      for Index in Procedures.First_Index .. Procedures.Last_Index loop
-         Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
-         declare
-            Profile        : Procedure_Declaration.Instance renames Procedures.Element (Index);
-            Has_Statements : Boolean := False;
-         begin
-            for Parameter of Profile.Formal_Parameters loop
-               if Has_Statements then
-                  New_Line (File => Target);
+
+      if Procedures.Length = 1 and then Procedures.Element (1).Formal_Parameters.Is_Empty then
+         Put_Line (File => Target, Item => "      pragma Unreferenced (Profile);");
+         Put_Line (File => Target, Item => "   begin");
+         Put_Line (File => Target, Item => "      return Arguments.Is_Empty;");
+      else
+         Put_Line (File => Target, Item => "      Buffer : Argument_List.Instance := Arguments;");
+         Put_Line (File => Target, Item => "   begin");
+         Put_Line (File => Target, Item => "      case Profile is");
+         for Index in Procedures.First_Index .. Procedures.Last_Index loop
+            Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
+            declare
+               Profile        : Procedure_Declaration.Instance renames Procedures.Element (Index);
+               Has_Statements : Boolean := False;
+            begin
+               for Parameter of Profile.Formal_Parameters loop
+                  if Has_Statements then
+                     New_Line (File => Target);
+                  end if;
+
+                  Put_Line (File => Target, Item => "            if Buffer.Contains (Key => """ & (+Parameter.Name) & """) then");
+
+                  if +Parameter.Type_Name = "Standard.String" then
+                     null;
+                  else
+                     Put_Line (File => Target, Item => "               declare");
+                     Put_Line (File => Target, Item => "                  Dummy : " & (+Parameter.Type_Name) & ";");
+                     Put_Line (File => Target, Item => "               begin");
+                     Put_Line (File => Target, Item => "                  Dummy := " & (+Parameter.Type_Name) & "'Value (Buffer.Element (Key => """ & (+Parameter.Name) & """));");
+                     Put_Line (File => Target, Item => "               exception");
+                     Put_Line (File => Target, Item => "                  when Constraint_Error =>");
+                     Put_Line (File => Target, Item => "                     return False;");
+                     Put_Line (File => Target, Item => "               end;");
+                     New_Line (File => Target);
+                  end if;
+
+                  Put_Line (File => Target, Item => "               Buffer.Delete (Key => """ & (+Parameter.Name) & """);");
+
+                  if not Parameter.Has_Default_Value then
+                     Put_Line (File => Target, Item => "            else");
+                     Put_Line (File => Target, Item => "               return False;");
+                  end if;
+
+                  Put_Line (File => Target, Item => "            end if;");
+
+                  Has_Statements := True;
+               end loop;
+
+               if not Has_Statements then
+                  Put_Line (File => Target, Item => "            null;");
                end if;
-
-               Put_Line (File => Target, Item => "            if Buffer.Contains (Key => """ & (+Parameter.Name) & """) then");
-
-               if +Parameter.Type_Name = "Standard.String" then
-                  null;
-               else
-                  Put_Line (File => Target, Item => "               declare");
-                  Put_Line (File => Target, Item => "                  Dummy : " & (+Parameter.Type_Name) & ";");
-                  Put_Line (File => Target, Item => "               begin");
-                  Put_Line (File => Target, Item => "                  Dummy := " & (+Parameter.Type_Name) & "'Value (Buffer.Element (Key => """ & (+Parameter.Name) & """));");
-                  Put_Line (File => Target, Item => "               exception");
-                  Put_Line (File => Target, Item => "                  when Constraint_Error =>");
-                  Put_Line (File => Target, Item => "                     return False;");
-                  Put_Line (File => Target, Item => "               end;");
-                  New_Line (File => Target);
-               end if;
-
-               Put_Line (File => Target, Item => "               Buffer.Delete (Key => """ & (+Parameter.Name) & """);");
-
-               if not Parameter.Has_Default_Value then
-                  Put_Line (File => Target, Item => "            else");
-                  Put_Line (File => Target, Item => "               return False;");
-               end if;
-
-               Put_Line (File => Target, Item => "            end if;");
-
-               Has_Statements := True;
-            end loop;
-
-            if not Has_Statements then
-               Put_Line (File => Target, Item => "            null;");
-            end if;
-         end;
-      end loop;
-      Put_Line (File => Target, Item => "      end case;");
-      New_Line (File => Target);
-      Put_Line (File => Target, Item => "      return Buffer.Is_Empty;");
+            end;
+         end loop;
+         Put_Line (File => Target, Item => "      end case;");
+         New_Line (File => Target);
+         Put_Line (File => Target, Item => "      return Buffer.Is_Empty;");
+      end if;
       Put_Line (File => Target, Item => "   end Match;");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Profiles;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "pragma Style_Checks (""-M79"");");
       Close (File => Target);
 
       pragma Style_Checks ("-M79");
@@ -569,16 +609,16 @@ package body Command_Line_Parser_Generator.Templates is
    begin
       pragma Style_Checks ("-M120");
 
-      Create_Specification (Name => Package_Name & ".Run",
+      Create_Specification (Name => Package_Name & ".Driver",
                             File => Target);
-      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Run;");
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Driver;");
       Close (File => Target);
 
-      Create_Body (Name => Package_Name & ".Run",
+      Create_Body (Name => Package_Name & ".Driver",
                    File => Target);
       Put_Line (File => Target, Item => "with " & Package_Name &".Command_Line_Parser;");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Run is");
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Driver is");
       Put_Line (File => Target, Item => "   use Command_Line_Parser;");
       Put_Line (File => Target, Item => "begin");
       Put_Line (File => Target, Item => "   Initialise;");
@@ -591,7 +631,7 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      when others =>");
       Put_Line (File => Target, Item => "         Errors.More_Than_One_Matching_Call_Profile;");
       Put_Line (File => Target, Item => "   end case;");
-      Put_Line (File => Target, Item => "end " & Package_Name & ".Run;");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Driver;");
       Close (File => Target);
 
       pragma Style_Checks ("-M79");
