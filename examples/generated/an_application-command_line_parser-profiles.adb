@@ -1,17 +1,28 @@
-with Ada.Containers;
+with An_Application.Command_Line_Parser.Key_List;
 
 package body An_Application.Command_Line_Parser.Profiles is
    procedure Call (Profile   : in     Index;
                    Arguments : in     Argument_List.Instance) is
+      use all type Key_List.Instance;
    begin
       pragma Style_Checks ("-M0");
 
       case Profile is
          when 1 =>
-            An_Application.Show_Help
-              (Help => Standard.Boolean'Value (Arguments.Element ("Help")));
+            if Arguments = (+"Help") then
+               An_Application.Show_Help
+                 (Help => Standard.Boolean'Value (Arguments.Element ("Help")));
+            else
+               raise Program_Error
+                 with "Profiles.Call called with invalid arguments.";
+            end if;
          when 2 =>
-            An_Application.Run_Interactive;
+            if Arguments.Is_Empty then
+               An_Application.Run_Interactive;
+            else
+               raise Program_Error
+                 with "Profiles.Call called with invalid arguments.";
+            end if;
       end case;
 
       pragma Style_Checks ("-M79");
@@ -19,8 +30,6 @@ package body An_Application.Command_Line_Parser.Profiles is
 
    function Match (Profile   : in     Index;
                    Arguments : in     Argument_List.Instance) return Boolean is
-      use type Ada.Containers.Count_Type;
-
       Buffer : Argument_List.Instance := Arguments;
    begin
       case Profile is
@@ -43,6 +52,6 @@ package body An_Application.Command_Line_Parser.Profiles is
             null;
       end case;
 
-      return Buffer.Length = 0;
+      return Buffer.Is_Empty;
    end Match;
 end An_Application.Command_Line_Parser.Profiles;
