@@ -507,8 +507,6 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) is");
       Put_Line (File => Target, Item => "      use all type Key_List.Instance;");
       Put_Line (File => Target, Item => "   begin");
-      Put_Line (File => Target, Item => "      pragma Style_Checks (""-M0"");");
-      New_Line (File => Target);
       Put_Line (File => Target, Item => "      case Profile is");
       for Index in Procedures.First_Index .. Procedures.Last_Index loop
          Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
@@ -530,8 +528,6 @@ package body Command_Line_Parser_Generator.Templates is
          Put_Line (File => Target, Item => "            end if;");
       end loop;
       Put_Line (File => Target, Item => "      end case;");
-      New_Line (File => Target);
-      Put_Line (File => Target, Item => "      pragma Style_Checks (""-M79"");");
       Put_Line (File => Target, Item => "   end Call;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
