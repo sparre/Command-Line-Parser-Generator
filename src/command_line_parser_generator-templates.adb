@@ -193,12 +193,14 @@ package body Command_Line_Parser_Generator.Templates is
 
    procedure Call (Target  : in     Ada.Wide_Text_IO.File_Type;
                    Profile : in     Procedure_Declaration.Instance;
-                   Prefix  : in     Wide_String) is
+                   Prefix  : in     Wide_String;
+                   First   : in     Boolean) is
    begin
       if Profile in Simple_Procedure then
          Simple_Call (Target  => Target,
                       Profile => Profile,
-                      Prefix  => Prefix);
+                      Prefix  => Prefix,
+                      First   => First);
       else
          declare
             Available       : Procedure_Declaration.Instance := Profile;
@@ -217,11 +219,12 @@ package body Command_Line_Parser_Generator.Templates is
 
             Call (Target  => Target,
                   Profile => Available,
-                  Prefix  => Prefix);
-            Ada.Wide_Text_IO.New_Line (File => Target);
+                  Prefix  => Prefix,
+                  First   => First);
             Call (Target  => Target,
                   Profile => Unavailable,
-                  Prefix  => Prefix);
+                  Prefix  => Prefix,
+                  First   => False);
          end;
       end if;
    end Call;
@@ -250,6 +253,78 @@ package body Command_Line_Parser_Generator.Templates is
               Name => +Target_Directory & "/" & To_File_Name (Name) & ".ads",
               Mode => Out_File);
    end Create_Specification;
+
+   procedure Key_List (Package_Name : in     Wide_String) is
+      use Ada.Wide_Text_IO;
+
+      Target : File_Type;
+   begin
+      pragma Style_Checks ("-M120");
+
+      Create_Specification (Name => Package_Name & ".Command_Line_Parser.Key_List",
+                            File => Target);
+      Put_Line (File => Target, Item => "with Ada.Containers.Indefinite_Hashed_Sets,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Equal_Case_Insensitive,");
+      Put_Line (File => Target, Item => "     Ada.Strings.Fixed.Hash_Case_Insensitive;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Argument_List;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "private");
+      Put_Line (File => Target, Item => "package " & Package_Name & ".Command_Line_Parser.Key_List is");
+      Put_Line (File => Target, Item => "   package Sets is");
+      Put_Line (File => Target, Item => "      new Ada.Containers.Indefinite_Hashed_Sets");
+      Put_Line (File => Target, Item => "            (Element_Type        => String,");
+      Put_Line (File => Target, Item => "             Hash                => Ada.Strings.Fixed.Hash_Case_Insensitive,");
+      Put_Line (File => Target, Item => "             Equivalent_Elements => Ada.Strings.Fixed.Equal_Case_Insensitive);");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   type Instance is new Sets.Set with null record;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function ""+"" (Left  : in     Instance;");
+      Put_Line (File => Target, Item => "                 Right : in     String) return Instance;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function ""+"" (Right : in     String) return Instance;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function ""="" (Left  : in     Argument_List.Instance;");
+      Put_Line (File => Target, Item => "                 Right : in     Instance) return Boolean;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Key_List;");
+      Close (File => Target);
+
+      Create_Body (Name => Package_Name & ".Command_Line_Parser.Key_List",
+                   File => Target);
+      Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Key_List is");
+      Put_Line (File => Target, Item => "   function ""+"" (Left  : in     Instance;");
+      Put_Line (File => Target, Item => "                 Right : in     String) return Instance is");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return Result : Instance := Left do");
+      Put_Line (File => Target, Item => "         Result.Insert (Right);");
+      Put_Line (File => Target, Item => "      end return;");
+      Put_Line (File => Target, Item => "   end ""+"";");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function ""+"" (Right : in     String) return Instance is");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      return Result : Instance do");
+      Put_Line (File => Target, Item => "         Result.Insert (Right);");
+      Put_Line (File => Target, Item => "      end return;");
+      Put_Line (File => Target, Item => "   end ""+"";");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "   function ""="" (Left  : in     Argument_List.Instance;");
+      Put_Line (File => Target, Item => "                 Right : in     Instance) return Boolean is");
+      Put_Line (File => Target, Item => "      use type Ada.Containers.Count_Type;");
+      Put_Line (File => Target, Item => "   begin");
+      Put_Line (File => Target, Item => "      for Key of Right loop");
+      Put_Line (File => Target, Item => "         if not Left.Contains (Key) then");
+      Put_Line (File => Target, Item => "            return False;");
+      Put_Line (File => Target, Item => "         end if;");
+      Put_Line (File => Target, Item => "      end loop;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "      return Left.Length = Right.Length;");
+      Put_Line (File => Target, Item => "   end ""="";");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Key_List;");
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Key_List;
 
    procedure Parser (Package_Name : in     Wide_String) is
       use Ada.Wide_Text_IO;
@@ -394,25 +469,12 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Body (Name => Package_Name & ".Command_Line_Parser.Profiles",
                    File => Target);
-      Put_Line (File => Target, Item => "with Ada.Containers;");
+      Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Key_List;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Profiles is");
       Put_Line (File => Target, Item => "   procedure Call (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) is");
-
-      declare
-         Arguments_Ignored : Boolean := True;
-      begin
-         for Profile of Procedures loop
-            Arguments_Ignored := Arguments_Ignored
-              and Profile.Formal_Parameters.Is_Empty;
-         end loop;
-
-         if Arguments_Ignored then
-            Put_Line (File => Target, Item => "      pragma Unreferenced (Arguments);");
-         end if;
-      end;
-
+      Put_Line (File => Target, Item => "      use all type Key_List.Instance;");
       Put_Line (File => Target, Item => "   begin");
       Put_Line (File => Target, Item => "      pragma Style_Checks (""-M0"");");
       New_Line (File => Target);
@@ -427,8 +489,14 @@ package body Command_Line_Parser_Generator.Templates is
               (Target      => Target,
                Profile     => (Name              => +(Package_Name & "." & (+Profile.Name)),
                                Formal_Parameters => Profile.Formal_Parameters),
-               Prefix      => "            ");
+               Prefix      => "            ",
+               First       => True);
          end;
+
+         Put_Line (File => Target, Item => "            else");
+         Put_Line (File => Target, Item => "               raise Program_Error");
+         Put_Line (File => Target, Item => "                 with ""Profiles.Call called with invalid arguments."";");
+         Put_Line (File => Target, Item => "            end if;");
       end loop;
       Put_Line (File => Target, Item => "      end case;");
       New_Line (File => Target);
@@ -437,8 +505,6 @@ package body Command_Line_Parser_Generator.Templates is
       New_Line (File => Target);
       Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) return Boolean is");
-      Put_Line (File => Target, Item => "      use type Ada.Containers.Count_Type;");
-      New_Line (File => Target);
       Put_Line (File => Target, Item => "      Buffer : Argument_List.Instance := Arguments;");
       Put_Line (File => Target, Item => "   begin");
       Put_Line (File => Target, Item => "      case Profile is");
@@ -488,7 +554,7 @@ package body Command_Line_Parser_Generator.Templates is
       end loop;
       Put_Line (File => Target, Item => "      end case;");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "      return Buffer.Length = 0;");
+      Put_Line (File => Target, Item => "      return Buffer.Is_Empty;");
       Put_Line (File => Target, Item => "   end Match;");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Command_Line_Parser.Profiles;");
       Close (File => Target);
@@ -539,13 +605,37 @@ package body Command_Line_Parser_Generator.Templates is
 
    procedure Simple_Call (Target  : in     Ada.Wide_Text_IO.File_Type;
                           Profile : in     Simple_Procedure;
-                          Prefix  : in     Wide_String) is
+                          Prefix  : in     Wide_String;
+                          First   : in     Boolean) is
       use Ada.Wide_Text_IO;
    begin
-      if Profile.Formal_Parameters.Is_Empty then
-         Put_Line (File => Target, Item => Prefix & (+Profile.Name) & ";");
+      if First then
+         Put      (File => Target, Item => Prefix & "if ");
       else
-         Put_Line (File => Target, Item => Prefix & (+Profile.Name));
+         Put      (File => Target, Item => Prefix & "elsif ");
+      end if;
+
+      if Profile.Formal_Parameters.Is_Empty then
+         Put_Line (File => Target, Item => "Arguments.Is_Empty then");
+
+         Put_Line (File => Target, Item => Prefix & "   " & (+Profile.Name) & ";");
+      else
+         Put      (File => Target, Item => "Arguments = (");
+         for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
+            declare
+               Is_First  : constant Boolean := Index = Profile.Formal_Parameters.First_Index;
+               Parameter : Formal_Parameter.Instance renames Profile.Formal_Parameters.Element (Index);
+            begin
+               if Is_First then
+                  Put      (File => Target, Item => "+""" & (+Parameter.Name) & """");
+               else
+                  Put      (File => Target, Item => " + """ & (+Parameter.Name) & """");
+               end if;
+            end;
+         end loop;
+         Put_Line (File => Target, Item => ") then");
+
+         Put_Line (File => Target, Item => Prefix & "   " & (+Profile.Name));
 
          for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
             declare
@@ -554,9 +644,9 @@ package body Command_Line_Parser_Generator.Templates is
                Parameter : Formal_Parameter.Instance renames Profile.Formal_Parameters.Element (Index);
             begin
                if Is_First then
-                  Put      (File => Target, Item => Prefix & "  (");
+                  Put      (File => Target, Item => Prefix & "     (");
                else
-                  Put      (File => Target, Item => Prefix & "   ");
+                  Put      (File => Target, Item => Prefix & "      ");
                end if;
 
                Put      (File => Target, Item => (+Parameter.Name) & " => ");
