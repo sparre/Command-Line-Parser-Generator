@@ -14,6 +14,7 @@ package Command_Line_Parser_Generator.Templates is
    procedure Parser        (Package_Name : in     Wide_String);
    procedure Argument_Type (Package_Name : in     Wide_String);
    procedure Argument_List (Package_Name : in     Wide_String);
+   procedure Key_List      (Package_Name : in     Wide_String);
    procedure Profiles
      (Package_Name : in     Wide_String;
       Procedures   : in     Procedure_Declaration_List.Instance)
@@ -26,7 +27,8 @@ private
 
    procedure Call (Target  : in     Ada.Wide_Text_IO.File_Type;
                    Profile : in     Procedure_Declaration.Instance;
-                   Prefix  : in     Wide_String);
+                   Prefix  : in     Wide_String;
+                   First   : in     Boolean);
 
    subtype Simple_Procedure is Procedure_Declaration.Instance
      with Dynamic_Predicate
@@ -34,5 +36,6 @@ private
 
    procedure Simple_Call (Target  : in     Ada.Wide_Text_IO.File_Type;
                           Profile : in     Simple_Procedure;
-                          Prefix  : in     Wide_String);
+                          Prefix  : in     Wide_String;
+                          First   : in     Boolean);
 end Command_Line_Parser_Generator.Templates;
