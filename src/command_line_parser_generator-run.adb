@@ -162,10 +162,19 @@ begin
                         declare
                            use type Source_Text;
                         begin
-                           A_Formal_Parameter.Image_Function :=
-                             A_Formal_Parameter.Type_Name & "'Image";
-                           A_Formal_Parameter.Value_Function :=
-                             A_Formal_Parameter.Type_Name & "'Value";
+                           if A_Formal_Parameter.Type_Name =
+                                +"Standard.String" or
+                              A_Formal_Parameter.Type_Name =
+                                +"Standard.Character"
+                           then
+                              A_Formal_Parameter.Image_Function := +"";
+                              A_Formal_Parameter.Value_Function := +"";
+                           else
+                              A_Formal_Parameter.Image_Function :=
+                                A_Formal_Parameter.Type_Name & "'Image";
+                              A_Formal_Parameter.Value_Function :=
+                                A_Formal_Parameter.Type_Name & "'Value";
+                           end if;
                         end Image_And_Value_Functions;
 
                         A_Procedure.Formal_Parameters.Append

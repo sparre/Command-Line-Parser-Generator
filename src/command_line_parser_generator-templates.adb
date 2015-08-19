@@ -556,11 +556,19 @@ package body Command_Line_Parser_Generator.Templates is
 
                   if +Parameter.Type_Name = "Standard.String" then
                      null;
+                  elsif +Parameter.Type_Name = "Standard.Character" then
+                     Put_Line (File => Target, Item => "               if Buffer.Element (Key => """ & (+Parameter.Name) & """)'Length /= 1 then");
+                     Put_Line (File => Target, Item => "                  return False;");
+                     Put_Line (File => Target, Item => "               end if;");
+                     New_Line (File => Target);
                   else
-                     Put_Line (File => Target, Item => "               declare");
-                     Put_Line (File => Target, Item => "                  Dummy : " & (+Parameter.Type_Name) & ";");
                      Put_Line (File => Target, Item => "               begin");
-                     Put_Line (File => Target, Item => "                  Dummy := " & (+Parameter.Type_Name) & "'Value (Buffer.Element (Key => """ & (+Parameter.Name) & """));");
+                     Put_Line (File => Target, Item => "                  declare");
+                     Put_Line (File => Target, Item => "                     Dummy : constant " & (+Parameter.Type_Name));
+                     Put_Line (File => Target, Item => "                       := " & (+Parameter.Value_Function) & " (Buffer.Element (Key => """ & (+Parameter.Name) & """));");
+                     Put_Line (File => Target, Item => "                  begin");
+                     Put_Line (File => Target, Item => "                     null;");
+                     Put_Line (File => Target, Item => "                  end;");
                      Put_Line (File => Target, Item => "               exception");
                      Put_Line (File => Target, Item => "                  when Constraint_Error =>");
                      Put_Line (File => Target, Item => "                     return False;");
@@ -689,8 +697,10 @@ package body Command_Line_Parser_Generator.Templates is
 
                if +Parameter.Type_Name = "Standard.String" then
                   Put      (File => Target, Item => "Arguments.Element (""" & (+Parameter.Name) & """)");
+               elsif +Parameter.Type_Name = "Standard.Character" then
+                  Put      (File => Target, Item => "Arguments.Element (""" & (+Parameter.Name) & """) (1)");
                else
-                  Put      (File => Target, Item => (+Parameter.Type_Name) & "'Value (Arguments.Element (""" & (+Parameter.Name) & """))");
+                  Put      (File => Target, Item => (+Parameter.Value_Function) & " (Arguments.Element (""" & (+Parameter.Name) & """))");
                end if;
 
                if Is_Last then
