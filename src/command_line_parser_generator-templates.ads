@@ -24,11 +24,15 @@ private
    procedure Create_Body (Name : in     Wide_String;
                           File : in out Ada.Wide_Text_IO.File_Type);
 
+   procedure Call (Target  : in     Ada.Wide_Text_IO.File_Type;
+                   Profile : in     Procedure_Declaration.Instance;
+                   Prefix  : in     Wide_String);
+
    subtype Simple_Procedure is Procedure_Declaration.Instance
      with Dynamic_Predicate
             => Simple_Procedure.Number_Of_Optional_Parameters = 0;
 
-   procedure Call (Target      : in     Ada.Wide_Text_IO.File_Type;
-                   Profile     : in     Simple_Procedure;
-                   Indentation : in     Natural);
+   procedure Simple_Call (Target  : in     Ada.Wide_Text_IO.File_Type;
+                          Profile : in     Simple_Procedure;
+                          Prefix  : in     Wide_String);
 end Command_Line_Parser_Generator.Templates;
