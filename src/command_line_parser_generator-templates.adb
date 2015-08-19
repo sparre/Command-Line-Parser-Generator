@@ -2,10 +2,10 @@ with Ada.Characters.Conversions,
      Ada.Characters.Handling,
      Ada.Containers,
      Ada.Directories,
-     Ada.Strings.Unbounded;
+     Ada.Strings.Unbounded,
+     Ada.Strings.Wide_Fixed;
 
-with Command_Line_Parser_Generator.Formal_Parameter,
-     Command_Line_Parser_Generator.Procedure_Declaration;
+with Command_Line_Parser_Generator.Formal_Parameter;
 
 package body Command_Line_Parser_Generator.Templates is
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
@@ -192,6 +192,44 @@ package body Command_Line_Parser_Generator.Templates is
       pragma Style_Checks ("-M79");
    end Argument_Type;
 
+   procedure Call (Target      : in     Ada.Wide_Text_IO.File_Type;
+                   Profile     : in     Simple_Procedure;
+                   Indentation : in     Natural) is
+      use Ada.Strings.Wide_Fixed, Ada.Wide_Text_IO;
+
+      Prefix : constant Wide_String := Indentation * ' ';
+   begin
+      Put_Line (File => Target, Item => Prefix & (+Profile.Name));
+
+      for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
+         declare
+            Is_First  : constant Boolean := Index = Profile.Formal_Parameters.First_Index;
+            Is_Last   : constant Boolean := Index = Profile.Formal_Parameters.Last_Index;
+            Parameter : Formal_Parameter.Instance renames Profile.Formal_Parameters.Element (Index);
+         begin
+            if Is_First then
+               Put      (File => Target, Item => Prefix & "  (");
+            else
+               Put      (File => Target, Item => Prefix & "   ");
+            end if;
+
+            Put      (File => Target, Item => (+Parameter.Name) & " => ");
+
+            if +Parameter.Type_Name = "Standard.String" then
+               Put      (File => Target, Item => "Arguments.Element (""" & (+Parameter.Name) & """)");
+            else
+               Put      (File => Target, Item => (+Parameter.Type_Name) & "'Value (Arguments.Element (""" & (+Parameter.Name) & """))");
+            end if;
+
+            if Is_Last then
+               Put_Line (File => Target, Item => ");");
+            else
+               Put_Line (File => Target, Item => ",");
+            end if;
+         end;
+      end loop;
+   end Call;
+
    procedure Create (Target_Directory : in String) is
       use Ada.Directories;
    begin
@@ -365,6 +403,20 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Profiles is");
       Put_Line (File => Target, Item => "   procedure Call (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) is");
+
+      declare
+         Arguments_Ignored : Boolean := True;
+      begin
+         for Profile of Procedures loop
+            Arguments_Ignored := Arguments_Ignored
+              and Profile.Formal_Parameters.Is_Empty;
+         end loop;
+
+         if Arguments_Ignored then
+            Put_Line (File => Target, Item => "      pragma Unreferenced (Arguments);");
+         end if;
+      end;
+
       Put_Line (File => Target, Item => "   begin");
       Put_Line (File => Target, Item => "      pragma Style_Checks (""-M0"");");
       New_Line (File => Target);
@@ -378,37 +430,12 @@ package body Command_Line_Parser_Generator.Templates is
             if Profile.Formal_Parameters.Is_Empty then
                Put_Line (File => Target, Item => "            " & Package_Name & "." & (+Profile.Name) & ";");
             elsif Profile.Number_Of_Optional_Parameters = 0 then
-               Put_Line (File => Target, Item => "            " & Package_Name & "." & (+Procedures.Element (Index).Name));
-
-               for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
-                  declare
-                     Is_First : constant Boolean := Index = Profile.Formal_Parameters.First_Index;
-                     Is_Last  : constant Boolean := Index = Profile.Formal_Parameters.Last_Index;
-                     Parameter : Formal_Parameter.Instance renames Profile.Formal_Parameters.Element (Index);
-                  begin
-                     if Is_First then
-                        Put      (File => Target, Item => "              (");
-                     else
-                        Put      (File => Target, Item => "               ");
-                     end if;
-
-                     Put      (File => Target, Item => (+Parameter.Name) & " => ");
-
-                     if +Parameter.Type_Name = "Standard.String" then
-                        Put      (File => Target, Item => "Arguments.Element (""" & (+Parameter.Name) & """)");
-                     else
-                        Put      (File => Target, Item => (+Parameter.Type_Name) & "'Value (Arguments.Element (""" & (+Parameter.Name) & """))");
-                     end if;
-
-                     if Is_Last then
-                        Put_Line (File => Target, Item => ");");
-                     else
-                        Put_Line (File => Target, Item => ",");
-                     end if;
-                  end;
-               end loop;
+               Call (Target      => Target,
+                     Profile     => (Name              => +(Package_Name & "." & (+Profile.Name)),
+                                     Formal_Parameters => Profile.Formal_Parameters),
+                     Indentation => 12);
             else
-               Put_Line (File => Target, Item => "            raise Program_Error with ""Parameter processing not implemented yet in Profiles.Call."";");
+               Put_Line (File => Target, Item => "            raise Program_Error with ""Optional parameter processing not implemented yet in Profiles.Call."";");
             end if;
          end;
       end loop;
