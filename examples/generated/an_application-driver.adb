@@ -1,6 +1,6 @@
 with An_Application.Command_Line_Parser;
 
-procedure An_Application.Run is
+procedure An_Application.Driver is
    use Command_Line_Parser;
 begin
    Initialise;
@@ -13,4 +13,4 @@ begin
       when others =>
          Errors.More_Than_One_Matching_Call_Profile;
    end case;
-end An_Application.Run;
+end An_Application.Driver;
