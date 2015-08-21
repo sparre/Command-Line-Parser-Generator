@@ -13,10 +13,13 @@ Installing
 
 Needed tools: diff, egrep, find, gnat, hg, make, perl, tar, wget, xargs, zsh
 
-    make install
+    OS_VERSION=unix make install
 
 Builds and tests the executable before installing it in
 "${DESTDIR}${PREFIX}/bin" (where "${PREFIX}" defaults to "${HOME}").
+
+Installing may also work on Windows, if you substitute "OS_VERSION=unix" with
+"OS_VERSION=windows".
 
 
 Building
@@ -24,7 +27,12 @@ Building
 
 Needed tools: egrep, find, gnat, hg, make, perl, tar, wget, xargs
 
-    make build
+    OS_VERSION=unix make build
+
+Builds the executable.
+
+Building may also work on Windows, if you substitute "OS_VERSION=unix" with
+"OS_VERSION=windows".
 
 
 Testing
@@ -32,7 +40,12 @@ Testing
 
 Needed tools: diff, egrep, find, gnat, hg, make, perl, tar, wget, xargs, zsh
 
-    make test
+    OS_VERSION=unix make test
+
+Builds and tests the executable.
+
+Testing may also work on Windows, if you substitute "OS_VERSION=unix" with
+"OS_VERSION=windows".
 
 
 Examples
