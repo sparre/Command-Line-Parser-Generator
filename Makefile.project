@@ -1,7 +1,6 @@
 PROJECT=command_line_parser_generator
 
-GENERATED_EXECUTABLES=bin/command_line_parser_generator-run \
-                      bin/demo
+GENERATED_EXECUTABLES=bin/command_line_parser_generator-run
 
 GENERATED_SOURCES=adacontrol \
                   ahven
