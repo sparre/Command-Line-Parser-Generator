@@ -27,7 +27,7 @@ obj/*.ad[sb].metrix
 *.adt
 
 # Generated source files:
-src/mercurial.ads
+src/command_line_parser_generator-mercurial.ads
 adacontrol/
 
 # Generated object files:
@@ -36,6 +36,4 @@ obj/*.o
 
 # Generated executables:
 bin/command_line_parser_generator-run
-bin/demo
-examples/generated/bin/an_application-run
 
