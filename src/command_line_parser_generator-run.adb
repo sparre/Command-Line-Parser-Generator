@@ -1,5 +1,6 @@
 with Ada.Characters.Handling,
      Ada.Command_Line,
+     Ada.Text_IO,
      Ada.Wide_Text_IO;
 
 with Asis,
@@ -11,6 +12,7 @@ with Asis,
      Asis.Text;
 
 with Command_Line_Parser_Generator.Formal_Parameter,
+     Command_Line_Parser_Generator.Mercurial,
      Command_Line_Parser_Generator.Procedure_Declaration,
      Command_Line_Parser_Generator.Procedure_Declaration_List,
      Command_Line_Parser_Generator.Setup,
@@ -234,4 +236,11 @@ begin
    Asis.Ada_Environments.Close (The_Context => Context);
    Asis.Ada_Environments.Dissociate (The_Context => Context);
    Asis.Implementation.Finalize (Parameters => "");
+exception
+   when others =>
+      Ada.Text_IO.Put_Line
+        (File => Ada.Text_IO.Standard_Error,
+         Item => "Exception in Command_Line_Parser_Generator (revision " &
+                 Mercurial.Revision & ").");
+      raise;
 end Command_Line_Parser_Generator.Run;
