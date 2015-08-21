@@ -8,10 +8,29 @@ The accepted command line arguments are derived from the formal parameters of
 the available procedures.
 
 
-Build and test
---------------
+Installing
+----------
+
+Needed tools: diff, egrep, find, gnat, hg, make, perl, tar, wget, xargs, zsh
+
+    make install
+
+Builds and tests the executable before installing it in
+"${DESTDIR}${PREFIX}/bin" (where "${PREFIX}" defaults to "${HOME}").
+
+
+Building
+--------
+
+Needed tools: egrep, find, gnat, hg, make, perl, tar, wget, xargs
 
     make build
+
+
+Testing
+-------
+
+Needed tools: diff, egrep, find, gnat, hg, make, perl, tar, wget, xargs, zsh
 
     make test
 
@@ -22,11 +41,11 @@ Examples
 The project comes with some examples (located in the `examples/` directory).
 The program `command_line_parser_generator-run` can be used to analyse them:
 
-    ./bin/command_line_parser_generator-run bad_declares_function
+    command_line_parser_generator-run bad_declares_function
 
-Notice that `command_line_parser_generator-run` contains hard-coded relative
-paths, which means that it only looks for source files in `examples/` and
-`src/`.
+Notice that `command_line_parser_generator-run` uses the environment variable
+ADA_INCLUDE_PATH to decide which directories to search for source files in.
+If ADA_INCLUDE_PATH isn't set, the current directory will be used.
 
 
 Links
