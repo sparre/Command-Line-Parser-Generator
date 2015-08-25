@@ -620,7 +620,7 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Body (Name => Package_Name & ".Driver",
                    File => Target);
-      Put_Line (File => Target, Item => "with " & Package_Name &".Command_Line_Parser;");
+      Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Driver is");
       Put_Line (File => Target, Item => "   use Command_Line_Parser;");
