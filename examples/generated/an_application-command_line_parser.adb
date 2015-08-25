@@ -42,6 +42,8 @@ package body An_Application.Command_Line_Parser is
       use Ada;
    begin
       for Index in 1 .. Command_Line.Argument_Count loop
+         exit when Command_Line.Argument (Index) = "--";
+
          Arguments.Insert (Command_Line_Parser.Argument.Value
                              (Command_Line.Argument (Index)));
       end loop;

@@ -431,6 +431,8 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      use Ada;");
       Put_Line (File => Target, Item => "   begin");
       Put_Line (File => Target, Item => "      for Index in 1 .. Command_Line.Argument_Count loop");
+      Put_Line (File => Target, Item => "         exit when Command_Line.Argument (Index) = ""--"";");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "         Arguments.Insert (Command_Line_Parser.Argument.Value");
       Put_Line (File => Target, Item => "                             (Command_Line.Argument (Index)));");
       Put_Line (File => Target, Item => "      end loop;");
