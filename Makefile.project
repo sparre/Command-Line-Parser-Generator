@@ -7,3 +7,5 @@ GENERATED_SOURCES=adacontrol \
 
 SCRIPTS=
 
+TEST_OUTPUT=
+
