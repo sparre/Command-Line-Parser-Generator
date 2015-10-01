@@ -1,8 +1,9 @@
-PROJECT=command_line_parser_generator
+PROJECT=Command_Line_Parser_Generator
 
-GENERATED_EXECUTABLES=bin/command_line_parser_generator-run
+GENERATED_EXECUTABLES=bin/$(LC_PROJECT)-run
 
-GENERATED_SOURCES=adacontrol \
+GENERATED_SOURCES=$(HG_STATE_SOURCE) \
+                  adacontrol \
                   ahven
 
 SCRIPTS=
