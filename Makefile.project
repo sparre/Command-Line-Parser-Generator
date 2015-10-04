@@ -2,8 +2,7 @@ PROJECT=Command_Line_Parser_Generator
 
 GENERATED_EXECUTABLES=bin/$(LC_PROJECT)-run
 
-GENERATED_SOURCES=$(HG_STATE_SOURCE) \
-                  adacontrol \
+GENERATED_SOURCES=adacontrol \
                   ahven
 
 SCRIPTS=
