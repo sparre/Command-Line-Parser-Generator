@@ -24,7 +24,7 @@ all: build metrics
 build: build-depends fix-whitespace $(GENERATED_SOURCES)
 	gnatmake -j$(PROCESSORS) -p -P $(LC_PROJECT)
 
-test: build metrics
+test: build metrics $(EXECUTABLES)
 	@mkdir -p tests/results
 	@./tests/build
 	@./tests/run
@@ -51,6 +51,7 @@ distclean: clean
 
 build-depends:
 	@for command in $$(cat .build-depends.commands) ; do if [ ! -x "$$(which $${command})" ]; then echo "'$${command}' not found."; exit 1; fi; done
+	@for project in $$(cat .build-depends.projects) ; do project_file="$$(gnatls -v | egrep '^   [^ ]' | sort -u | while read directory ; do ls "$${directory}/$${project}.gpr" 2>/dev/null; done)" ; if [ -z "$${project_file}" -o ! -s "$${project_file}" ]; then echo "'$${project}.gpr' not found."; exit 1; fi; done
 
 fix-whitespace:
 	@find src tests -name '*.ad?' | xargs egrep -l '	| $$' | grep -v '^b[~]' | xargs perl -i -lpe 's|	|        |g; s| +$$||g' 2>/dev/null || true
