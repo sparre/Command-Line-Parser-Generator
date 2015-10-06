@@ -8,12 +8,25 @@ The accepted command line arguments are derived from the formal parameters of
 the available procedures.
 
 
+Build dependencies
+------------------
+
++ Zsh
+* GNU Parallel
+* GNAT (including the `gnatmetric` tool)
+* Mercurial (hg)
+* Perl
+* Wget
+* Tar
+* ASIS (the Ada Semantic Interface)
+
+
 Installing
 ----------
 
-Needed tools: diff, egrep, find, gnat, hg, make, perl, tar, wget, xargs, zsh
-
-    OS_VERSION=unix make install
+```
+   OS_VERSION=unix make install
+```
 
 Builds and tests the executable before installing it in
 "${DESTDIR}${PREFIX}/bin" (where "${PREFIX}" defaults to "${HOME}").
@@ -22,30 +35,24 @@ Installing may also work on Windows, if you substitute "OS_VERSION=unix" with
 "OS_VERSION=windows".
 
 
-Building
---------
-
-Needed tools: egrep, find, gnat, hg, make, perl, tar, wget, xargs
-
-    OS_VERSION=unix make build
-
-Builds the executable.
-
-Building may also work on Windows, if you substitute "OS_VERSION=unix" with
-"OS_VERSION=windows".
-
-
 Testing
 -------
 
-Needed tools: diff, egrep, find, gnat, hg, make, perl, tar, wget, xargs, zsh
-
-    OS_VERSION=unix make test
+```
+   OS_VERSION=unix make test
+```
 
 Builds and tests the executable.
 
-Testing may also work on Windows, if you substitute "OS_VERSION=unix" with
-"OS_VERSION=windows".
+
+Building
+--------
+
+```
+   OS_VERSION=unix make build
+```
+
+Builds the executable.
 
 
 Examples
@@ -70,10 +77,13 @@ repositories [3] or my web site [4].
 
 [1] Source text repository:
     http://repositories.jacob-sparre.dk/command-line-parser-generator
+
 [2] Free Ada Tools and Libraries:
     http://www.adaic.org/ada-resources/tools-libraries/
+
 [3] My repositories on Bitbucket:
     http://repositories.jacob-sparre.dk/
+
 [4] My web site:
     http://www.jacob-sparre.dk/
 
