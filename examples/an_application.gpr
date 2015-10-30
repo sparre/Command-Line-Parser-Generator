@@ -1,12 +1,12 @@
 --  O mighty Emacs, please use -*- Ada -*- mode in this lowly file.
 
-with "ada_2012";
+with "../ada_2012";
 
 project An_Application is
    for Source_Dirs use ("./",
-                        "../");
+                        "../reference_generated/");
 
-   for Main use ("an_application-run");
+   for Main use ("an_application-driver");
 
    package Builder  renames Ada_2012.Builder;
    package Compiler renames Ada_2012.Compiler;

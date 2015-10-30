@@ -1,0 +1,8 @@
+#compdef an_application-driver
+
+arguments=(
+  '--help=[Show_Help -> Help]:Boolean:(True False)'
+)
+
+_arguments -s $arguments
+
