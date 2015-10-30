@@ -728,4 +728,68 @@ package body Command_Line_Parser_Generator.Templates is
 
       return Result;
    end To_File_Name;
+
+   procedure Zsh_Command_Completion
+     (Package_Name : in     Wide_String;
+      Procedures   : in     Procedure_Declaration_List.Instance) is
+      use Ada.Characters.Conversions, Ada.Wide_Text_IO;
+
+      Target        : File_Type;
+      Add_Separator : Boolean := False;
+   begin
+      pragma Style_Checks ("-M160");
+
+      Create (File => Target,
+              Name => (+Target_Directory) & "/_" & To_File_Name (Package_Name) & "-driver",
+              Mode => Out_File);
+
+      Put_Line (File => Target, Item => "#compdef " & To_Wide_String (To_File_Name (Package_Name)) & "-driver");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "local arguments");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "arguments=(");
+
+      for Index in Procedures.First_Index .. Procedures.Last_Index loop
+         declare
+            use type Source_Text;
+
+            Profile : Procedure_Declaration.Instance renames Procedures.Element (Index);
+         begin
+            for Parameter of Profile.Formal_Parameters loop
+               if Add_Separator then
+                  New_Line (File => Target);
+                  Add_Separator := False;
+               end if;
+
+               Put (File => Target, Item => "  '--" & (+Parameter.Name));
+
+               if Parameter.Type_Name = "Standard.Boolean" then
+                  if Parameter.Default_Value = "False" then
+                     Put_Line (File => Target, Item => "[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]'");
+                  else
+                     Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Boolean:(True False)'");
+                  end if;
+               elsif Parameter.Type_Name = "Standard.String" then
+                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:String:*'");
+               elsif Parameter.Type_Name = "File_Name" then
+                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:File name:_files'");
+               elsif Parameter.Type_Name = "Directory_Name" then
+                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Directory name:_directories'");
+               else
+                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:" & (+Parameter.Type_Name) & ":'");
+               end if;
+            end loop;
+         end;
+
+         Add_Separator := True;
+      end loop;
+
+      Put_Line (File => Target, Item => ")");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "_arguments -s $arguments");
+
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Zsh_Command_Completion;
 end Command_Line_Parser_Generator.Templates;

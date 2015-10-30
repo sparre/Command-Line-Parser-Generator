@@ -19,6 +19,11 @@ package Command_Line_Parser_Generator.Templates is
      (Package_Name : in     Wide_String;
       Procedures   : in     Procedure_Declaration_List.Instance)
      with Pre => not Procedures.Is_Empty;
+
+   procedure Zsh_Command_Completion
+     (Package_Name : in     Wide_String;
+      Procedures   : in     Procedure_Declaration_List.Instance)
+     with Pre => not Procedures.Is_Empty;
 private
    procedure Create_Specification (Name : in     Wide_String;
                                    File : in out Ada.Wide_Text_IO.File_Type);

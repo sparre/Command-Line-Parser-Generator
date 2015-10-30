@@ -225,6 +225,9 @@ begin
          Templates.Key_List      (Package_Name => +Package_Name);
          Templates.Profiles      (Package_Name => +Package_Name,
                                   Procedures   => Profiles);
+
+         Templates.Zsh_Command_Completion (Package_Name => +Package_Name,
+                                           Procedures   => Profiles);
       end if;
    exception
       when others =>
