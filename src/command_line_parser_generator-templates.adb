@@ -222,6 +222,10 @@ package body Command_Line_Parser_Generator.Templates is
             Available       : Procedure_Declaration.Instance := Profile;
             Unavailable     : Procedure_Declaration.Instance := Profile;
             Parameter_Index : Positive;
+            --  As Profile isn't a Simple_Procedure, at least one
+            --  formal parameter has a default value. => We don't have
+            --  to worry that Parameter_Index will not be set in the
+            --  loop.
          begin
             for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
                if Profile.Formal_Parameters.Element (Index).Has_Default_Value then
@@ -732,6 +736,7 @@ package body Command_Line_Parser_Generator.Templates is
    procedure Zsh_Command_Completion
      (Package_Name : in     Wide_String;
       Procedures   : in     Procedure_Declaration_List.Instance) is
+
       use Ada.Characters.Conversions, Ada.Wide_Text_IO;
 
       Target        : File_Type;
@@ -745,9 +750,7 @@ package body Command_Line_Parser_Generator.Templates is
 
       Put_Line (File => Target, Item => "#compdef " & To_Wide_String (To_File_Name (Package_Name)) & "-driver");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "local arguments");
-      New_Line (File => Target);
-      Put_Line (File => Target, Item => "arguments=(");
+      Put_Line (File => Target, Item => "_arguments -s (");
 
       for Index in Procedures.First_Index .. Procedures.Last_Index loop
          declare
@@ -769,11 +772,9 @@ package body Command_Line_Parser_Generator.Templates is
                   else
                      Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Boolean:(True False)'");
                   end if;
-               elsif Parameter.Type_Name = "Standard.String" then
-                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:String:*'");
-               elsif Parameter.Type_Name = "File_Name" then
+               elsif Parameter.Type_Name = Package_Name & ".File_Name" then
                   Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:File name:_files'");
-               elsif Parameter.Type_Name = "Directory_Name" then
+               elsif Parameter.Type_Name = Package_Name & ".Directory_Name" then
                   Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Directory name:_directories'");
                else
                   Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:" & (+Parameter.Type_Name) & ":'");
@@ -785,8 +786,6 @@ package body Command_Line_Parser_Generator.Templates is
       end loop;
 
       Put_Line (File => Target, Item => ")");
-      New_Line (File => Target);
-      Put_Line (File => Target, Item => "_arguments -s $arguments");
 
       Close (File => Target);
 
