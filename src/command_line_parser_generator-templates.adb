@@ -224,8 +224,7 @@ package body Command_Line_Parser_Generator.Templates is
             Parameter_Index : Positive;
             --  As Profile isn't a Simple_Procedure, at least one
             --  formal parameter has a default value. => We don't have
-            --  to worry that Parameter_Index will not be set in the
-            --  loop.
+            --  to worry that Parameter_Index will not be set in the loop.
          begin
             for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
                if Profile.Formal_Parameters.Element (Index).Has_Default_Value then
@@ -750,7 +749,9 @@ package body Command_Line_Parser_Generator.Templates is
 
       Put_Line (File => Target, Item => "#compdef " & To_Wide_String (To_File_Name (Package_Name)) & "-driver");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "_arguments -s (");
+      Put_Line (File => Target, Item => "local arguments");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "arguments=(");
 
       for Index in Procedures.First_Index .. Procedures.Last_Index loop
          declare
@@ -786,6 +787,8 @@ package body Command_Line_Parser_Generator.Templates is
       end loop;
 
       Put_Line (File => Target, Item => ")");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "_arguments -s $arguments");
 
       Close (File => Target);
 
