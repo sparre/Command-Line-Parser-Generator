@@ -4,7 +4,9 @@ with Ada.Characters.Conversions,
      Ada.Directories,
      Ada.Strings.Unbounded;
 
-with Command_Line_Parser_Generator.Formal_Parameter;
+with Command_Line_Parser_Generator.Formal_Parameter,
+     Command_Line_Parser_Generator.Identifier_Matrix,
+     Command_Line_Parser_Generator.Identifier_Set;
 
 package body Command_Line_Parser_Generator.Templates is
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
@@ -224,8 +226,7 @@ package body Command_Line_Parser_Generator.Templates is
             Parameter_Index : Positive;
             --  As Profile isn't a Simple_Procedure, at least one
             --  formal parameter has a default value. => We don't have
-            --  to worry that Parameter_Index will not be set in the
-            --  loop.
+            --  to worry that Parameter_Index will not be set in the loop.
          begin
             for Index in Profile.Formal_Parameters.First_Index .. Profile.Formal_Parameters.Last_Index loop
                if Profile.Formal_Parameters.Element (Index).Has_Default_Value then
@@ -738,10 +739,23 @@ package body Command_Line_Parser_Generator.Templates is
       Procedures   : in     Procedure_Declaration_List.Instance) is
 
       use Ada.Characters.Conversions, Ada.Wide_Text_IO;
+      use type Source_Text;
 
-      Target        : File_Type;
-      Add_Separator : Boolean := False;
+      Coexisting_Arguments : Identifier_Matrix.Instance;
+      All_Arguments        : Identifier_Set.Instance;
+      Target               : File_Type;
    begin
+      for Profile of Procedures loop
+         for Parameter of Profile.Formal_Parameters loop
+            All_Arguments.Append (Value => Parameter.Name);
+
+            for Coparameter of Profile.Formal_Parameters loop
+               Coexisting_Arguments.Append (Key   => Parameter.Name,
+                                            Value => Coparameter.Name);
+            end loop;
+         end loop;
+      end loop;
+
       pragma Style_Checks ("-M160");
 
       Create (File => Target,
@@ -750,42 +764,57 @@ package body Command_Line_Parser_Generator.Templates is
 
       Put_Line (File => Target, Item => "#compdef " & To_Wide_String (To_File_Name (Package_Name)) & "-driver");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "_arguments -s (");
+      Put_Line (File => Target, Item => "local arguments");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "arguments=(");
 
-      for Index in Procedures.First_Index .. Procedures.Last_Index loop
+      for Argument of All_Arguments loop
          declare
-            use type Source_Text;
+            use type Identifier_Set.Instance;
 
-            Profile : Procedure_Declaration.Instance renames Procedures.Element (Index);
+            Excluded_Arguments : constant Identifier_Set.Instance :=
+              All_Arguments - Coexisting_Arguments.Element (Argument);
          begin
-            for Parameter of Profile.Formal_Parameters loop
-               if Add_Separator then
-                  New_Line (File => Target);
-                  Add_Separator := False;
-               end if;
+            Put      (File => Target, Item => "  '");
 
-               Put (File => Target, Item => "  '--" & (+Parameter.Name));
+            if not Excluded_Arguments.Is_Empty then
+               Put (File => Target, Item => "(");
+               for Excluded of Excluded_Arguments loop
+                  Put (File => Target, Item => "--" & (+Excluded) & " ");
+               end loop;
+               Put (File => Target, Item => ")");
+            end if;
 
-               if Parameter.Type_Name = "Standard.Boolean" then
-                  if Parameter.Default_Value = "False" then
-                     Put_Line (File => Target, Item => "[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]'");
-                  else
-                     Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Boolean:(True False)'");
-                  end if;
-               elsif Parameter.Type_Name = Package_Name & ".File_Name" then
-                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:File name:_files'");
-               elsif Parameter.Type_Name = Package_Name & ".Directory_Name" then
-                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Directory name:_directories'");
-               else
-                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:" & (+Parameter.Type_Name) & ":'");
-               end if;
-            end loop;
+            Put      (File => Target, Item => "--" & (+Argument) & "[Description]:type name:pattern");
+            Put_Line (File => Target, Item => "'");
          end;
+      end loop;
 
-         Add_Separator := True;
+      New_Line (File => Target);
+
+      for Profile of Procedures loop
+         for Parameter of Profile.Formal_Parameters loop
+            Put (File => Target, Item => "  '--" & (+Parameter.Name));
+
+            if Parameter.Type_Name = "Standard.Boolean" then
+               if Parameter.Default_Value = "False" then
+                  Put_Line (File => Target, Item => "[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]'");
+               else
+                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Boolean:(True False)'");
+               end if;
+            elsif Parameter.Type_Name = Package_Name & ".File_Name" then
+               Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:File name:_files'");
+            elsif Parameter.Type_Name = Package_Name & ".Directory_Name" then
+               Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Directory name:_directories'");
+            else
+               Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:" & (+Parameter.Type_Name) & ":'");
+            end if;
+         end loop;
       end loop;
 
       Put_Line (File => Target, Item => ")");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "_arguments -s $arguments");
 
       Close (File => Target);
 
