@@ -4,9 +4,11 @@ with Ada.Characters.Conversions,
      Ada.Directories,
      Ada.Strings.Unbounded;
 
-with Command_Line_Parser_Generator.Formal_Parameter,
+with Command_Line_Parser_Generator.Argument_Zsh_Pattern_Map,
+     Command_Line_Parser_Generator.Formal_Parameter,
      Command_Line_Parser_Generator.Identifier_Matrix,
-     Command_Line_Parser_Generator.Identifier_Set;
+     Command_Line_Parser_Generator.Identifier_Set,
+     Command_Line_Parser_Generator.Zsh_Argument_Pattern;
 
 package body Command_Line_Parser_Generator.Templates is
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
@@ -743,11 +745,14 @@ package body Command_Line_Parser_Generator.Templates is
 
       Coexisting_Arguments : Identifier_Matrix.Instance;
       All_Arguments        : Identifier_Set.Instance;
+      Patterns             : Argument_Zsh_Pattern_Map.Instance;
       Target               : File_Type;
    begin
       for Profile of Procedures loop
          for Parameter of Profile.Formal_Parameters loop
             All_Arguments.Append (Value => Parameter.Name);
+            Patterns.Append (Key     => Parameter.Name,
+                             Pattern => Parameter.Zsh_Pattern);
 
             for Coparameter of Profile.Formal_Parameters loop
                Coexisting_Arguments.Append (Key   => Parameter.Name,
@@ -770,6 +775,7 @@ package body Command_Line_Parser_Generator.Templates is
 
       for Argument of All_Arguments loop
          declare
+            use Zsh_Argument_Pattern;
             use type Identifier_Set.Instance;
 
             Excluded_Arguments : constant Identifier_Set.Instance :=
@@ -785,7 +791,16 @@ package body Command_Line_Parser_Generator.Templates is
                Put (File => Target, Item => ")");
             end if;
 
-            Put      (File => Target, Item => "--" & (+Argument) & "[Description]:type name:pattern");
+            if Patterns.Element (Argument).Kind = Flag then
+               Put      (File => Target, Item => "--" & (+Argument));
+               Put      (File => Target, Item => "[Description]");
+            else
+               Put      (File => Target, Item => "--" & (+Argument));
+               Put      (File => Target, Item => "=[Description]:");
+               Put      (File => Target, Item => "type name:");
+               Put      (File => Target, Item => Patterns.Element (Argument).Image);
+            end if;
+
             Put_Line (File => Target, Item => "'");
          end;
       end loop;

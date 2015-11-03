@@ -12,12 +12,14 @@ with Asis,
      Asis.Text;
 
 with Command_Line_Parser_Generator.Formal_Parameter,
+     Command_Line_Parser_Generator.Identifier_Set,
      Command_Line_Parser_Generator.Mercurial,
      Command_Line_Parser_Generator.Procedure_Declaration,
      Command_Line_Parser_Generator.Procedure_Declaration_List,
      Command_Line_Parser_Generator.Setup,
      Command_Line_Parser_Generator.Templates,
-     Command_Line_Parser_Generator.Utilities;
+     Command_Line_Parser_Generator.Utilities,
+     Command_Line_Parser_Generator.Zsh_Argument_Pattern;
 
 procedure Command_Line_Parser_Generator.Run is
    Context             : Asis.Context;
@@ -86,6 +88,7 @@ begin
                Show_Parameters :
                declare
                   use all type Asis.Mode_Kinds;
+                  use all type Zsh_Argument_Pattern.Instance;
 
                   Parameters : constant Asis.Parameter_Specification_List :=
                                  Parameter_Profile (Declaration);
@@ -95,7 +98,8 @@ begin
                      Image_Function    => +"'Image",
                      Value_Function    => +"'Value",
                      Default_Value     => +"<default value>",
-                     Type_Name         => +"<type name>");
+                     Type_Name         => +"<type name>",
+                     Zsh_Pattern       => +Zsh_Argument_Pattern.Anything);
                begin
                   for Parameter of Parameters loop
                      for Name of Names (Parameter) loop
@@ -178,6 +182,40 @@ begin
                                 A_Formal_Parameter.Type_Name & "'Value";
                            end if;
                         end Image_And_Value_Functions;
+
+                        Zsh_View_Of_Type :
+                        declare
+                           use Identifier_Set, Zsh_Argument_Pattern;
+                           use type Source_Text;
+
+                           P : Formal_Parameter.Instance
+                                 renames A_Formal_Parameter;
+                        begin
+                           if P.Type_Name = "Standard.Boolean" then
+                              if P.Default_Value = "False" then
+                                 P.Zsh_Pattern := +Flag;
+                              else
+                                 P.Zsh_Pattern := Create_Enumeration
+                                   (To_Set (+"True") or To_Set (+"False"));
+                              end if;
+                           elsif P.Type_Name = Package_Name & ".File_Name" then
+                              P.Zsh_Pattern := +Files;
+                           elsif P.Type_Name = Package_Name & ".Directory_Name"
+                           then
+                              P.Zsh_Pattern := +Directories;
+                           elsif P.Type_Name = "Ada.Strings.Trim_End" then
+                              P.Zsh_Pattern := Create_Enumeration
+                                (To_Set (+"Left")
+                                   or To_Set (+"Right")
+                                   or To_Set (+"Both"));
+                           else
+                              Ada.Text_IO.Put_Line
+                                (File => Ada.Text_IO.Standard_Error,
+                                 Item => "TODO: Get list of enumeration " &
+                                         "values for Zsh patterns.");
+                              A_Formal_Parameter.Zsh_Pattern := +Anything;
+                           end if;
+                        end Zsh_View_Of_Type;
 
                         A_Procedure.Formal_Parameters.Append
                           (A_Formal_Parameter);
