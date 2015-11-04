@@ -191,29 +191,31 @@ begin
                            P : Formal_Parameter.Instance
                                  renames A_Formal_Parameter;
                         begin
-                           if P.Type_Name = "Standard.Boolean" then
-                              if P.Default_Value = "False" then
-                                 P.Zsh_Pattern := +Flag;
-                              else
-                                 P.Zsh_Pattern := Create_Enumeration
-                                   (To_Set (+"True") or To_Set (+"False"));
-                              end if;
+                           if P.Type_Name = "Standard.Boolean" and
+                              P.Default_Value = "False"
+                           then
+                              P.Zsh_Pattern := +Flag;
                            elsif P.Type_Name = Package_Name & ".File_Name" then
                               P.Zsh_Pattern := +Files;
                            elsif P.Type_Name = Package_Name & ".Directory_Name"
                            then
                               P.Zsh_Pattern := +Directories;
-                           elsif P.Type_Name = "Ada.Strings.Trim_End" then
-                              P.Zsh_Pattern := Create_Enumeration
-                                (To_Set (+"Left")
-                                   or To_Set (+"Right")
-                                   or To_Set (+"Both"));
                            else
-                              Ada.Text_IO.Put_Line
-                                (File => Ada.Text_IO.Standard_Error,
-                                 Item => "TODO: Get list of enumeration " &
-                                         "values for Zsh patterns.");
-                              A_Formal_Parameter.Zsh_Pattern := +Anything;
+                              declare
+                                 use Utilities;
+
+                                 Type_Of_Parameter : constant Asis.Declaration
+                                   := Object_Declaration_View (Parameter);
+                              begin
+                                 if Is_Enumeration (Type_Of_Parameter) then
+                                    P.Zsh_Pattern :=
+                                      Create_Enumeration
+                                        (Values => Enumeration_Values
+                                                     (Type_Of_Parameter));
+                                 else
+                                    P.Zsh_Pattern := +Anything;
+                                 end if;
+                              end;
                            end if;
                         end Zsh_View_Of_Type;
 
