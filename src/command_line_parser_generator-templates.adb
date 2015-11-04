@@ -4,7 +4,8 @@ with Ada.Characters.Conversions,
      Ada.Directories,
      Ada.Strings.Unbounded;
 
-with Command_Line_Parser_Generator.Argument_Zsh_Pattern_Map,
+with Command_Line_Parser_Generator.Argument_Description_Map,
+     Command_Line_Parser_Generator.Argument_Zsh_Pattern_Map,
      Command_Line_Parser_Generator.Formal_Parameter,
      Command_Line_Parser_Generator.Identifier_Matrix,
      Command_Line_Parser_Generator.Identifier_Set,
@@ -746,6 +747,8 @@ package body Command_Line_Parser_Generator.Templates is
       Coexisting_Arguments : Identifier_Matrix.Instance;
       All_Arguments        : Identifier_Set.Instance;
       Patterns             : Argument_Zsh_Pattern_Map.Instance;
+      Descriptions         : Argument_Description_Map.Instance;
+      Type_Descriptions    : Argument_Description_Map.Instance;
       Target               : File_Type;
    begin
       for Profile of Procedures loop
@@ -753,6 +756,10 @@ package body Command_Line_Parser_Generator.Templates is
             All_Arguments.Append (Value => Parameter.Name);
             Patterns.Append (Key     => Parameter.Name,
                              Pattern => Parameter.Zsh_Pattern);
+            Descriptions.Append (Key   => Parameter.Name,
+                                 Value => Profile.Name & " -> " & Parameter.Name);
+            Type_Descriptions.Append (Key   => Parameter.Name,
+                                      Value => Parameter.Type_Name);
 
             for Coparameter of Profile.Formal_Parameters loop
                Coexisting_Arguments.Append (Key   => Parameter.Name,
@@ -793,38 +800,16 @@ package body Command_Line_Parser_Generator.Templates is
 
             if Patterns.Element (Argument).Kind = Flag then
                Put      (File => Target, Item => "--" & (+Argument));
-               Put      (File => Target, Item => "[Description]");
+               Put      (File => Target, Item => "[" & Descriptions.Image (Argument) & "]");
             else
                Put      (File => Target, Item => "--" & (+Argument));
-               Put      (File => Target, Item => "=[Description]:");
-               Put      (File => Target, Item => "type name:");
+               Put      (File => Target, Item => "=[" & Descriptions.Image (Argument) & "]:");
+               Put      (File => Target, Item => Type_Descriptions.Image (Argument) & ":");
                Put      (File => Target, Item => Patterns.Element (Argument).Image);
             end if;
 
             Put_Line (File => Target, Item => "'");
          end;
-      end loop;
-
-      New_Line (File => Target);
-
-      for Profile of Procedures loop
-         for Parameter of Profile.Formal_Parameters loop
-            Put (File => Target, Item => "  '--" & (+Parameter.Name));
-
-            if Parameter.Type_Name = "Standard.Boolean" then
-               if Parameter.Default_Value = "False" then
-                  Put_Line (File => Target, Item => "[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]'");
-               else
-                  Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Boolean:(True False)'");
-               end if;
-            elsif Parameter.Type_Name = Package_Name & ".File_Name" then
-               Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:File name:_files'");
-            elsif Parameter.Type_Name = Package_Name & ".Directory_Name" then
-               Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:Directory name:_directories'");
-            else
-               Put_Line (File => Target, Item => "=[" & (+Profile.Name) & " -> " & (+Parameter.Name) & "]:" & (+Parameter.Type_Name) & ":'");
-            end if;
-         end loop;
       end loop;
 
       Put_Line (File => Target, Item => ")");
