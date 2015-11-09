@@ -30,6 +30,8 @@ for file in ../../examples/*.ads ; do
       expected_result=bad
    fi
 
+   name=${name//-/.}
+
    ( cd ../.. && ADA_INCLUDE_PATH=src:examples ./bin/command_line_parser_generator-run ${name} ) \
      1>${name}.log \
      2>${name}.errors
