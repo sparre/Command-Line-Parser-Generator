@@ -15,4 +15,14 @@ package Command_Line_Parser_Generator.Utilities is
                            return Boolean;
    function Enumeration_Values (Type_Declaration : in Asis.Declaration)
                                return Identifier_Set.Instance;
+
+   function Is_String_Compatible (Type_Declaration : in Asis.Declaration)
+                                 return Boolean;
+   function Is_Integer_Compatible (The_Subtypes : in Asis.Element_List)
+                                  return Boolean;
+   function Is_Integer_Compatible (The_Subtype : in Asis.Element)
+                                  return Boolean;
+
+   function Static_Match_With_Character
+     (The_Subtype : in Asis.Declaration) return Boolean;
 end Command_Line_Parser_Generator.Utilities;

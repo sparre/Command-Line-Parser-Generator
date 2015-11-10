@@ -56,6 +56,11 @@ begin
             Put_Line (File => Standard_Error,
                       Item => """" & To_Wide_String (Argument (1)) &
                               """ is not a package specification.");
+            Put_Line (File => Standard_Error,
+                      Item => "It appears to be a " &
+                              Asis.Unit_Kinds'Wide_Image
+                                (Unit_Kind (Compilation_Unit)) & ".");
+            --  TODO: Check if the user typed "P-Q" instead of "P.Q"!
             Set_Exit_Status (Failure);
             return;
       end case;
@@ -166,20 +171,23 @@ begin
 
                         Image_And_Value_Functions :
                         declare
+                           use Utilities;
                            use type Source_Text;
+
+                           P : Formal_Parameter.Instance
+                                 renames A_Formal_Parameter;
                         begin
-                           if A_Formal_Parameter.Type_Name =
-                                +"Standard.String" or
-                              A_Formal_Parameter.Type_Name =
-                                +"Standard.Character"
+                           if Is_String_Compatible (Object_Declaration_View
+                                                      (Parameter))
                            then
-                              A_Formal_Parameter.Image_Function := +"";
-                              A_Formal_Parameter.Value_Function := +"";
+                              P.Image_Function := +"Standard.String";
+                              P.Value_Function := P.Type_Name;
+                           elsif P.Type_Name = "Standard.Character" then
+                              P.Image_Function := +"";
+                              P.Value_Function := +"";
                            else
-                              A_Formal_Parameter.Image_Function :=
-                                A_Formal_Parameter.Type_Name & "'Image";
-                              A_Formal_Parameter.Value_Function :=
-                                A_Formal_Parameter.Type_Name & "'Value";
+                              P.Image_Function := P.Type_Name & "'Image";
+                              P.Value_Function := P.Type_Name & "'Value";
                            end if;
                         end Image_And_Value_Functions;
 

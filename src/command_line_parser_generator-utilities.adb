@@ -9,6 +9,10 @@ with Asis.Declarations,
 with Thick_Queries;
 
 package body Command_Line_Parser_Generator.Utilities is
+   function First_Subtype_Definition (Item   : Asis.Declaration;
+                                      Prefix : Wide_String := "* ")
+                                     return Asis.Element;
+
    function Defining_Name (Item : Asis.Declaration) return Wide_String is
       Name_List : constant Asis.Defining_Name_List :=
                     Asis.Declarations.Names (Item);
@@ -55,7 +59,7 @@ package body Command_Line_Parser_Generator.Utilities is
    exception
       when others =>
          Put_Line (File => Standard_Error,
-                   Item => "Enumeration_Values:");
+                   Item => "Exception raised in Enumeration_Values:");
 
          Put_Line (File => Standard_Error,
                    Item => "   Type of formal parameter: '" &
@@ -82,6 +86,90 @@ package body Command_Line_Parser_Generator.Utilities is
 
          raise;
    end Enumeration_Values;
+
+   function First_Subtype_Definition (Item   : Asis.Declaration;
+                                      Prefix : Wide_String := "* ")
+                                     return Asis.Element
+   is
+   begin
+      declare
+         use Asis.Declarations, Asis.Definitions, Asis.Elements,
+             Asis.Expressions,
+             Asis.Text;
+
+         Name        : constant Asis.Element := Name_Definition (Item);
+         Declaration : constant Asis.Element := Enclosing_Element (Name);
+         Kind        : constant Asis.Declaration_Kinds := Declaration_Kind
+                                                            (Declaration);
+         Definition  : constant Asis.Element := Type_Declaration_View
+                                                  (Declaration);
+      begin
+         case Kind is
+            when Asis.An_Ordinary_Type_Declaration =>
+               case Type_Kind (Definition) is
+                  when Asis.A_Derived_Type_Definition =>
+                     return First_Subtype_Definition
+                              (Subtype_Mark (Parent_Subtype_Indication
+                                               (Definition)),
+                               "*" & Prefix);
+                  when others =>
+                     return Definition;
+               end case;
+            when Asis.A_Subtype_Declaration =>
+               return First_Subtype_Definition (Subtype_Mark (Definition),
+                                                "*" & Prefix);
+            when others =>
+               return
+                 raise Program_Error
+                   with "First_Subtype_Definition does not handle " &
+                        Asis.Declaration_Kinds'Image (Kind) & " yet.";
+         end case;
+      exception
+         when others =>
+            declare
+               use Ada.Wide_Text_IO;
+            begin
+               Put_Line (File => Standard_Error,
+                         Item => Prefix & "   Type name: '" &
+                                 Element_Image (Name) & "'");
+
+               Put_Line (File => Standard_Error,
+                         Item => Prefix & "   Type declaration: '" &
+                                 Element_Image (Declaration) & "'");
+               Put_Line (File => Standard_Error,
+                         Item => Prefix & Debug_Image (Declaration));
+               Put_Line (File => Standard_Error,
+                         Item => Prefix);
+
+               Put_Line (File => Standard_Error,
+                         Item => Prefix & "   Type declaration view: '" &
+                                 Element_Image (Definition) & "'");
+               Put_Line (File => Standard_Error,
+                         Item => Prefix & Debug_Image (Definition));
+               Put_Line (File => Standard_Error,
+                         Item => Prefix);
+               New_Line (File => Standard_Error);
+            end;
+
+            raise;
+      end;
+   exception
+      when others =>
+         declare
+            use Ada.Wide_Text_IO;
+            use Asis.Elements;
+         begin
+            Put_Line (File => Standard_Error,
+                      Item => Prefix & Debug_Image (Item));
+            Put_Line (File => Standard_Error,
+                      Item => Prefix);
+            Put_Line (File => Standard_Error,
+                      Item => Prefix & "First_Subtype_Definition terminated " &
+                              "by an exception.");
+         end;
+
+         raise;
+   end First_Subtype_Definition;
 
    function Full_Defining_Name (Item : Asis.Declaration) return Wide_String is
       Full_Type : Asis.Element;
@@ -122,79 +210,114 @@ package body Command_Line_Parser_Generator.Utilities is
       use Asis.Declarations, Asis.Definitions, Asis.Elements, Asis.Expressions,
           Asis.Text;
 
-      Name        : constant Asis.Element :=
-                      Name_Definition (Type_Declaration);
-      Declaration : constant Asis.Element :=
-                      Enclosing_Element (Name);
-      Definition  : constant Asis.Element :=
-                      Type_Declaration_View (Declaration);
+      Definition  : Asis.Element;
    begin
       if Full_Defining_Name (Type_Declaration) = "Standard.Character" then
          return False;
+      else
+         Definition := First_Subtype_Definition (Type_Declaration);
+
+         case Type_Kind (Definition) is
+            when Asis.An_Enumeration_Type_Definition =>
+               return True;
+            when Asis.Not_A_Type_Definition =>
+               raise Program_Error
+                 with "Is_Enumeration attempted to get the type kind of " &
+                      "something which isn't a type.";
+            when Asis.An_Unconstrained_Array_Definition =>
+               return False;
+            when Asis.A_Derived_Type_Definition =>
+               raise Program_Error
+                 with "First_Subtype_Definition should not be a derived " &
+                      "type definition.";
+            when Asis.A_Signed_Integer_Type_Definition =>
+               return False;
+            when others =>
+               raise Program_Error
+                 with "Is_Enumeration (type) not fully implemented yet.";
+         end case;
+      end if;
+   end Is_Enumeration;
+
+   function Is_Integer_Compatible (The_Subtypes : in Asis.Element_List)
+                                  return Boolean is
+   begin
+      if The_Subtypes'Length /= 1 then
+         raise Constraint_Error
+           with "Is_Integer_Compatible expects exactly one subtype in the " &
+                "list.";
       end if;
 
-      case Declaration_Kind (Declaration) is
-         when Asis.An_Ordinary_Type_Declaration =>
-            case Type_Kind (Definition) is
-               when Asis.An_Enumeration_Type_Definition =>
-                  return True;
-               when Asis.Not_A_Type_Definition =>
-                  raise Program_Error
-                    with "Is_Enumeration attempted to get the type kind of " &
-                         "something which isn't a type.";
-               when Asis.An_Unconstrained_Array_Definition =>
-                  return False;
-               when Asis.A_Derived_Type_Definition =>
-                  return
-                    Is_Enumeration (Parent_Subtype_Indication (Definition));
-               when Asis.A_Signed_Integer_Type_Definition =>
-                  return False;
-               when others =>
-                  raise Program_Error with "Is_Enumeration (type) not fully " &
-                                           "implemented yet.";
-            end case;
-         when Asis.A_Subtype_Declaration =>
-            return Is_Enumeration (Subtype_Mark (Definition));
+      return Is_Integer_Compatible (The_Subtypes (The_Subtypes'First));
+   end Is_Integer_Compatible;
 
-            --  return
-            --    raise Program_Error with "Is_Enumeration (subtype) not " &
-            --                             "implemented yet.";
-         when others =>
-            return
-              raise Program_Error with "Is_Enumeration does not handle " &
-              Asis.Declaration_Kinds'Image (Declaration_Kind (Declaration)) &
-              " yet.";
-      end case;
+   function Is_Integer_Compatible (The_Subtype : in Asis.Element)
+                                  return Boolean is
+   begin
+      if Full_Defining_Name (The_Subtype) = "Standard.Integer" then
+         return True;
+      elsif Full_Defining_Name (The_Subtype) = "Standard.Natural" then
+         return True;
+      elsif Full_Defining_Name (The_Subtype) = "Standard.Positive" then
+         return True;
+      else
+         return raise Program_Error
+           with "Is_Integer compatible not implemented yet.";
+      end if;
    exception
       when others =>
-         Put_Line (File => Standard_Error,
-                   Item => "Is_Enumeration:");
-
-         Put_Line (File => Standard_Error,
-                   Item => "   Type of formal parameter: '" &
-                     Element_Image (Type_Declaration) & "'");
-
-         Put_Line (File => Standard_Error,
-                   Item => "   Type name: '" &
-                     Element_Image (Name) & "'");
-
-         Put_Line (File => Standard_Error,
-                   Item => "   Type declaration: '" &
-                     Element_Image (Declaration) & "'");
-         Put_Line (File => Standard_Error,
-                   Item => Debug_Image (Declaration));
-         New_Line (File => Standard_Error);
-
-         Put_Line (File => Standard_Error,
-                   Item => "   Type declaration view: '" &
-                     Element_Image (Definition) &
-                     "'");
-         Put_Line (File => Standard_Error,
-                   Item => Debug_Image (Definition));
-         New_Line (File => Standard_Error);
+         declare
+            use Ada.Wide_Text_IO;
+            use Asis.Text;
+         begin
+            Put_Line (File => Standard_Error,
+                      Item => "Is_Integer_Compatible terminated by an " &
+                              "exception.");
+         end;
 
          raise;
-   end Is_Enumeration;
+   end Is_Integer_Compatible;
+
+   function Is_String_Compatible (Type_Declaration : in Asis.Declaration)
+                                 return Boolean is
+   begin
+      if Full_Defining_Name (Type_Declaration) = "Standard.Character" then
+         return False;
+      elsif Full_Defining_Name (Type_Declaration) = "Standard.String" then
+         return True;
+      end if;
+
+      declare
+         use Asis.Definitions, Asis.Elements;
+
+         Definition : constant Asis.Element := First_Subtype_Definition
+                                                 (Type_Declaration);
+      begin
+         case Type_Kind (Definition) is
+            when Asis.An_Enumeration_Type_Definition =>
+               return False;
+            when Asis.Not_A_Type_Definition =>
+               raise Program_Error
+                 with "Is_String_Compatible attempted to get the type kind " &
+                      "of something which isn't a type.";
+            when Asis.An_Unconstrained_Array_Definition =>
+               return
+                 Is_Integer_Compatible (Index_Subtype_Definitions (Definition))
+                 and
+                 Static_Match_With_Character (Array_Component_Definition
+                                                (Definition));
+            when Asis.A_Derived_Type_Definition =>
+               raise Program_Error
+                 with "First_Subtype_Definition should not be a derived " &
+                      "type definition.";
+            when Asis.A_Signed_Integer_Type_Definition =>
+               return False;
+            when others =>
+               raise Program_Error
+                 with "Is_String_Compatible not fully implemented yet.";
+         end case;
+      end;
+   end Is_String_Compatible;
 
    function Name_Definition (Item : Asis.Declaration) return Asis.Element is
       use Asis, Asis.Elements, Asis.Expressions;
@@ -224,4 +347,47 @@ package body Command_Line_Parser_Generator.Utilities is
 
       return Defining_Name (CU_Declaration);
    end Source_Name;
+
+   function Static_Match_With_Character
+     (The_Subtype : in Asis.Declaration) return Boolean is
+   begin
+      declare
+         use Asis.Definitions;
+
+         View : Asis.Definition renames Component_Definition_View
+                                          (The_Subtype);
+         Mark : Asis.Expression renames Subtype_Mark (View);
+      begin
+         if Full_Defining_Name (Mark) = "Standard.Character" then
+            return True;
+         end if;
+      end;
+
+      return raise Program_Error
+               with "Static_Match_With_Character not fully implemented yet.";
+   exception
+      when others =>
+         declare
+            use Ada.Wide_Text_IO;
+            use Asis.Definitions, Asis.Elements;
+         begin
+            Put_Line (File => Standard_Error,
+                      Item => Debug_Image (The_Subtype));
+            New_Line (File => Standard_Error);
+            Put_Line (File => Standard_Error,
+                      Item => Debug_Image (Component_Definition_View
+                                             (The_Subtype)));
+            New_Line (File => Standard_Error);
+            Put_Line (File => Standard_Error,
+                      Item => Debug_Image (Subtype_Mark
+                                             (Component_Definition_View
+                                                (The_Subtype))));
+            New_Line (File => Standard_Error);
+            Put_Line (File => Standard_Error,
+                      Item => "Static_Match_With_Character terminate by an " &
+                              "exception");
+         end;
+
+         raise;
+   end Static_Match_With_Character;
 end Command_Line_Parser_Generator.Utilities;
