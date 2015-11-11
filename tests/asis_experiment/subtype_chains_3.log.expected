@@ -1,5 +1,5 @@
 package Subtype_Chains_3 is
 
-procedure Run (Even : in     Subtype_Chains_2.Two);
+   procedure Run (Even : in     Subtype_Chains_2.Two);
 
 end Subtype_Chains_3;
