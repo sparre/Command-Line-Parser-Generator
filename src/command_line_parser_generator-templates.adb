@@ -629,26 +629,56 @@ package body Command_Line_Parser_Generator.Templates is
       pragma Style_Checks ("-M79");
    end Profiles;
 
-   procedure Put_Help (Package_Name : in     Wide_String) is
+   procedure Put_Help
+     (Package_Name       : in     Wide_String;
+      Procedures         : in     Procedure_Declaration_List.Instance;
+      External_Show_Help : in     Boolean)
+   is
       use Ada.Wide_Text_IO;
 
+      List   : Procedure_Declaration_List.Instance := Procedures;
       Target : File_Type;
    begin
+      if External_Show_Help then
+         List.Append (Show_Help);
+      end if;
+
       pragma Style_Checks ("-M120");
 
       Create_Specification (Name => Package_Name & ".Put_Help",
                             File => Target);
+      Put_Line (File => Target, Item => "with Ada.Command_Line;");
       Put_Line (File => Target, Item => "with Ada.Text_IO;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Put_Help (File : in     Ada.Text_IO.File_Type);");
       Close (File => Target);
 
-      Create_Body (Name => Package_Name & ".Show_Help",
+      Create_Body (Name => Package_Name & ".Put_Help",
                    File => Target);
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Put_Help (File : in     Ada.Text_IO.File_Type) is");
-      Put_Line (File => Target, Item => "   use Ada.Text_IO");
+      Put_Line (File => Target, Item => "   use Ada.Command_Line, Ada.Text_IO;");
       Put_Line (File => Target, Item => "begin");
-      Put_Line (File => Target, Item => "   Put_Line (File, ""Help for " & Package_Name & "."");");
+      Put_Line (File => Target, Item => "   Put_Line (File, ""Help for " & Package_Name & ":"");");
+      Put_Line (File => Target, Item => "   New_Line (File);");
+
+      for Profile of List loop
+         Put_Line (File => Target, Item => "   Put_Line (File, ""   " & (+Profile.Name) & ":"");");
+         Put_Line (File => Target, Item => "   New_Line (File);");
+
+         if Profile.Formal_Parameters.Is_Empty then
+            Put_Line (File => Target, Item => "   Put_Line (File, ""      "" & Command_Name);");
+         else
+            Put_Line (File => Target, Item => "   Put_Line (File, ""      "" & Command_Name & "" [arguments]"");");
+            Put_Line (File => Target, Item => "   New_Line (File);");
+         end if;
+
+         for Parameter of Profile.Formal_Parameters loop
+            Put_Line (File => Target, Item => "   Put_Line (File, ""         --" & (+Parameter.Name) & "=..."");");
+         end loop;
+
+         Put_Line (File => Target, Item => "   New_Line (File);");
+      end loop;
+
       Put_Line (File => Target, Item => "end " & Package_Name & ".Put_Help;");
       Close (File => Target);
 
@@ -695,7 +725,7 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "   end case;");
       Put_Line (File => Target, Item => "exception");
       Put_Line (File => Target, Item => "   when others =>");
-      Put_Line (File => Target, Item => "      Put_Help (File => Ada.Text_IO.Standard_Error);");
+      Put_Line (File => Target, Item => "      " & Package_Name & ".Put_Help (File => Ada.Text_IO.Standard_Error);");
       Put_Line (File => Target, Item => "      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Driver;");
       Close (File => Target);
@@ -729,13 +759,13 @@ package body Command_Line_Parser_Generator.Templates is
       New_Line (File => Target);
 
       if External_Put_Help then
-         Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser;");
+         Put_Line (File => Target, Item => "with " & Package_Name & ".Put_Help;");
          New_Line (File => Target);
       end if;
 
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Boolean := False) is");
       Put_Line (File => Target, Item => "begin");
-      Put_Line (File => Target, Item => "   Put_Help (File => Ada.Text_IO.Standard_Output);");
+      Put_Line (File => Target, Item => "   " & Package_Name &".Put_Help (File => Ada.Text_IO.Standard_Output);");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Show_Help;");
       Close (File => Target);
 

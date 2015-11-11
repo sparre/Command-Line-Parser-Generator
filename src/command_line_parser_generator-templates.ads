@@ -27,9 +27,13 @@ package Command_Line_Parser_Generator.Templates is
       Procedures   : in     Procedure_Declaration_List.Instance)
      with Pre => not Procedures.Is_Empty;
 
-   procedure Put_Help  (Package_Name      : in     Wide_String);
-   procedure Show_Help (Package_Name      : in     Wide_String;
-                        External_Put_Help : in     Boolean);
+   procedure Put_Help
+     (Package_Name       : in     Wide_String;
+      Procedures         : in     Procedure_Declaration_List.Instance;
+      External_Show_Help : in     Boolean);
+   procedure Show_Help
+     (Package_Name       : in     Wide_String;
+      External_Put_Help  : in     Boolean);
 private
    procedure Create_Specification (Name : in     Wide_String;
                                    File : in out Ada.Wide_Text_IO.File_Type);
