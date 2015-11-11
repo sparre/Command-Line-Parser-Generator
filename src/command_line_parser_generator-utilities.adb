@@ -17,8 +17,13 @@ package body Command_Line_Parser_Generator.Utilities is
       Name_List : constant Asis.Defining_Name_List :=
                     Asis.Declarations.Names (Item);
    begin
-      return
-        Asis.Declarations.Defining_Name_Image (Name_List (Name_List'First));
+      if Name_List'Length = 1 then
+         return
+           Asis.Declarations.Defining_Name_Image (Name_List (Name_List'First));
+      else
+         raise Constraint_Error
+           with "Defining_Name: Declaration has multiple names.";
+      end if;
    end Defining_Name;
 
    function Enumeration_Values (Type_Declaration : in Asis.Declaration)

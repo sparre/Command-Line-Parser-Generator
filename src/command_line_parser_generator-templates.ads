@@ -10,20 +10,26 @@ package Command_Line_Parser_Generator.Templates is
    procedure Set    (Target_Directory : in String);
    procedure Create (Target_Directory : in String);
 
-   procedure Runner        (Package_Name : in     Wide_String);
-   procedure Parser        (Package_Name : in     Wide_String);
-   procedure Argument_Type (Package_Name : in     Wide_String);
-   procedure Argument_List (Package_Name : in     Wide_String);
-   procedure Key_List      (Package_Name : in     Wide_String);
+   procedure Runner        (Package_Name      : in     Wide_String;
+                            External_Put_Help : in     Boolean);
+   procedure Parser        (Package_Name      : in     Wide_String);
+   procedure Argument_Type (Package_Name      : in     Wide_String);
+   procedure Argument_List (Package_Name      : in     Wide_String);
+   procedure Key_List      (Package_Name      : in     Wide_String);
    procedure Profiles
-     (Package_Name : in     Wide_String;
-      Procedures   : in     Procedure_Declaration_List.Instance)
+     (Package_Name       : in     Wide_String;
+      Procedures         : in     Procedure_Declaration_List.Instance;
+      External_Show_Help : in     Boolean)
      with Pre => not Procedures.Is_Empty;
 
    procedure Zsh_Command_Completion
      (Package_Name : in     Wide_String;
       Procedures   : in     Procedure_Declaration_List.Instance)
      with Pre => not Procedures.Is_Empty;
+
+   procedure Put_Help  (Package_Name      : in     Wide_String);
+   procedure Show_Help (Package_Name      : in     Wide_String;
+                        External_Put_Help : in     Boolean);
 private
    procedure Create_Specification (Name : in     Wide_String;
                                    File : in out Ada.Wide_Text_IO.File_Type);
@@ -43,4 +49,6 @@ private
                           Profile : in     Simple_Procedure;
                           Prefix  : in     Wide_String;
                           First   : in     Boolean);
+
+   function Show_Help return Procedure_Declaration.Instance;
 end Command_Line_Parser_Generator.Templates;
