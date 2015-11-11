@@ -10,6 +10,7 @@ with Command_Line_Parser_Generator.Argument_Description_Map,
      Command_Line_Parser_Generator.Formal_Parameter_List,
      Command_Line_Parser_Generator.Identifier_Matrix,
      Command_Line_Parser_Generator.Identifier_Set,
+     Command_Line_Parser_Generator.Utilities,
      Command_Line_Parser_Generator.Zsh_Argument_Pattern;
 
 package body Command_Line_Parser_Generator.Templates is
@@ -643,7 +644,7 @@ package body Command_Line_Parser_Generator.Templates is
          List.Append (Show_Help);
       end if;
 
-      pragma Style_Checks ("-M120");
+      pragma Style_Checks ("-M160");
 
       Create_Specification (Name => Package_Name & ".Put_Help",
                             File => Target);
@@ -673,7 +674,13 @@ package body Command_Line_Parser_Generator.Templates is
          end if;
 
          for Parameter of Profile.Formal_Parameters loop
-            Put_Line (File => Target, Item => "   Put_Line (File, ""         --" & (+Parameter.Name) & "=..."");");
+            Put      (File => Target, Item => "   Put_Line (File, ""         --" & (+Parameter.Name) & "=<" & (+Parameter.Type_Name) & ">");
+
+            if +Parameter.Default_Value = "" then
+               Put_Line (File => Target, Item => " - required"");");
+            else
+               Put_Line (File => Target, Item => " - optional, default = " & Utilities.To_Ada_Source (Parameter.Default_Value) & """);");
+            end if;
          end loop;
 
          Put_Line (File => Target, Item => "   New_Line (File);");

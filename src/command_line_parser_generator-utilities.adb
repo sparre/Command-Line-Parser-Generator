@@ -395,4 +395,20 @@ package body Command_Line_Parser_Generator.Utilities is
 
          raise;
    end Static_Match_With_Character;
+
+   function To_Ada_Source (Item : in Source_Text) return Wide_String is
+      use all type Source_Text;
+      Buffer : Source_Text;
+   begin
+      for C of Wide_String'(+Item) loop
+         case C is
+            when '"' =>
+               Append (Buffer, """""");
+            when others =>
+               Append (Buffer, (1 => C));
+         end case;
+      end loop;
+
+      return +Buffer;
+   end To_Ada_Source;
 end Command_Line_Parser_Generator.Utilities;
