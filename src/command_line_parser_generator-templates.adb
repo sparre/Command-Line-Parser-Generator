@@ -7,6 +7,7 @@ with Ada.Characters.Conversions,
 with Command_Line_Parser_Generator.Argument_Description_Map,
      Command_Line_Parser_Generator.Argument_Zsh_Pattern_Map,
      Command_Line_Parser_Generator.Formal_Parameter,
+     Command_Line_Parser_Generator.Formal_Parameter_List,
      Command_Line_Parser_Generator.Identifier_Matrix,
      Command_Line_Parser_Generator.Identifier_Set,
      Command_Line_Parser_Generator.Zsh_Argument_Pattern;
@@ -477,13 +478,20 @@ package body Command_Line_Parser_Generator.Templates is
    end Parser;
 
    procedure Profiles
-     (Package_Name : in     Wide_String;
-      Procedures   : in     Procedure_Declaration_List.Instance) is
+     (Package_Name       : in     Wide_String;
+      Procedures         : in     Procedure_Declaration_List.Instance;
+      External_Show_Help : in     Boolean)
+   is
       use Ada.Wide_Text_IO;
       use type Ada.Containers.Count_Type;
 
+      List   : Procedure_Declaration_List.Instance := Procedures;
       Target : File_Type;
    begin
+      if External_Show_Help then
+         List.Append (Show_Help);
+      end if;
+
       pragma Style_Checks ("-M120");
 
       Create_Specification (Name => Package_Name & ".Command_Line_Parser.Profiles",
@@ -494,7 +502,7 @@ package body Command_Line_Parser_Generator.Templates is
       New_Line (File => Target);
       Put_Line (File => Target, Item => "private");
       Put_Line (File => Target, Item => "package " & Package_Name & ".Command_Line_Parser.Profiles is");
-      Put_Line (File => Target, Item => "   type Index is range 1 .." & Ada.Containers.Count_Type'Wide_Image (Procedures.Length) & ";");
+      Put_Line (File => Target, Item => "   type Index is range 1 .." & Ada.Containers.Count_Type'Wide_Image (List.Length) & ";");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) return Boolean;");
@@ -511,6 +519,11 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser.Key_List;");
+
+      if External_Show_Help then
+         Put_Line (File => Target, Item => "with " & Package_Name & ".Show_Help;");
+      end if;
+
       New_Line (File => Target);
       Put_Line (File => Target, Item => "package body " & Package_Name & ".Command_Line_Parser.Profiles is");
       Put_Line (File => Target, Item => "   procedure Call (Profile   : in     Index;");
@@ -518,11 +531,11 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      use all type Key_List.Instance;");
       Put_Line (File => Target, Item => "   begin");
       Put_Line (File => Target, Item => "      case Profile is");
-      for Index in Procedures.First_Index .. Procedures.Last_Index loop
+      for Index in List.First_Index .. List.Last_Index loop
          Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
 
          declare
-            Profile : Procedure_Declaration.Instance renames Procedures.Element (Index);
+            Profile : Procedure_Declaration.Instance renames List.Element (Index);
          begin
             Call
               (Target      => Target,
@@ -543,7 +556,7 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "   function Match (Profile   : in     Index;");
       Put_Line (File => Target, Item => "                   Arguments : in     Argument_List.Instance) return Boolean is");
 
-      if Procedures.Length = 1 and then Procedures.Element (1).Formal_Parameters.Is_Empty then
+      if List.Length = 1 and then List.Element (1).Formal_Parameters.Is_Empty then
          Put_Line (File => Target, Item => "      pragma Unreferenced (Profile);");
          Put_Line (File => Target, Item => "   begin");
          Put_Line (File => Target, Item => "      return Arguments.Is_Empty;");
@@ -551,10 +564,10 @@ package body Command_Line_Parser_Generator.Templates is
          Put_Line (File => Target, Item => "      Buffer : Argument_List.Instance := Arguments;");
          Put_Line (File => Target, Item => "   begin");
          Put_Line (File => Target, Item => "      case Profile is");
-         for Index in Procedures.First_Index .. Procedures.Last_Index loop
+         for Index in List.First_Index .. List.Last_Index loop
             Put_Line (File => Target, Item => "         when" & Positive'Wide_Image (Index) & " =>");
             declare
-               Profile        : Procedure_Declaration.Instance renames Procedures.Element (Index);
+               Profile        : Procedure_Declaration.Instance renames List.Element (Index);
                Has_Statements : Boolean := False;
             begin
                for Parameter of Profile.Formal_Parameters loop
@@ -616,7 +629,34 @@ package body Command_Line_Parser_Generator.Templates is
       pragma Style_Checks ("-M79");
    end Profiles;
 
-   procedure Runner (Package_Name : in     Wide_String) is
+   procedure Put_Help (Package_Name : in     Wide_String) is
+      use Ada.Wide_Text_IO;
+
+      Target : File_Type;
+   begin
+      pragma Style_Checks ("-M120");
+
+      Create_Specification (Name => Package_Name & ".Put_Help",
+                            File => Target);
+      Put_Line (File => Target, Item => "with Ada.Text_IO;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Put_Help (File : in     Ada.Text_IO.File_Type);");
+      Close (File => Target);
+
+      Create_Body (Name => Package_Name & ".Show_Help",
+                   File => Target);
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Put_Help (File : in     Ada.Text_IO.File_Type) is");
+      Put_Line (File => Target, Item => "   use Ada.Text_IO");
+      Put_Line (File => Target, Item => "begin");
+      Put_Line (File => Target, Item => "   Put_Line (File, ""Help for " & Package_Name & "."");");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Put_Help;");
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Put_Help;
+
+   procedure Runner (Package_Name      : in     Wide_String;
+                     External_Put_Help : in     Boolean) is
       use Ada.Wide_Text_IO;
 
       Target : File_Type;
@@ -630,7 +670,15 @@ package body Command_Line_Parser_Generator.Templates is
 
       Create_Body (Name => Package_Name & ".Driver",
                    File => Target);
+      Put_Line (File => Target, Item => "with Ada.Command_Line;");
+      Put_Line (File => Target, Item => "with Ada.Text_IO;");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser;");
+
+      if External_Put_Help then
+         Put_Line (File => Target, Item => "with " & Package_Name & ".Put_Help;");
+      end if;
+
       New_Line (File => Target);
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Driver is");
       Put_Line (File => Target, Item => "   use Command_Line_Parser;");
@@ -645,6 +693,10 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "      when others =>");
       Put_Line (File => Target, Item => "         Errors.More_Than_One_Matching_Call_Profile;");
       Put_Line (File => Target, Item => "   end case;");
+      Put_Line (File => Target, Item => "exception");
+      Put_Line (File => Target, Item => "   when others =>");
+      Put_Line (File => Target, Item => "      Put_Help (File => Ada.Text_IO.Standard_Error);");
+      Put_Line (File => Target, Item => "      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Driver;");
       Close (File => Target);
 
@@ -656,6 +708,55 @@ package body Command_Line_Parser_Generator.Templates is
    begin
       Templates.Target_Directory := +Full_Name (Target_Directory);
    end Set;
+
+   procedure Show_Help (Package_Name      : in     Wide_String;
+                        External_Put_Help : in     Boolean)
+   is
+      use Ada.Wide_Text_IO;
+
+      Target : File_Type;
+   begin
+      pragma Style_Checks ("-M120");
+
+      Create_Specification (Name => Package_Name & ".Show_Help",
+                            File => Target);
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Boolean := False);");
+      Close (File => Target);
+
+      Create_Body (Name => Package_Name & ".Show_Help",
+                   File => Target);
+      Put_Line (File => Target, Item => "with Ada.Text_IO;");
+      New_Line (File => Target);
+
+      if External_Put_Help then
+         Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser;");
+         New_Line (File => Target);
+      end if;
+
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Boolean := False) is");
+      Put_Line (File => Target, Item => "begin");
+      Put_Line (File => Target, Item => "   Put_Help (File => Ada.Text_IO.Standard_Output);");
+      Put_Line (File => Target, Item => "end " & Package_Name & ".Show_Help;");
+      Close (File => Target);
+
+      pragma Style_Checks ("-M79");
+   end Show_Help;
+
+   function Show_Help return Procedure_Declaration.Instance
+   is
+      use all type Formal_Parameter_List.Instance;
+      use Zsh_Argument_Pattern;
+   begin
+      return (Name              => +"Show_Help",
+              Formal_Parameters =>
+                To_Vector ((Name           => +"Help",
+                            Image_Function => +"Standard.Boolean'Image",
+                            Value_Function => +"Standard.Boolean'Value",
+                            Default_Value  => +"False",
+                            Type_Name      => +"Standard.Boolean",
+                            Zsh_Pattern    => Create (Flag)),
+                           1));
+   end Show_Help;
 
    procedure Simple_Call (Target  : in     Ada.Wide_Text_IO.File_Type;
                           Profile : in     Simple_Procedure;

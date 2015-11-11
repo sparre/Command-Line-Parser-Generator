@@ -12,6 +12,7 @@ with Asis,
      Asis.Text;
 
 with Command_Line_Parser_Generator.Formal_Parameter,
+     Command_Line_Parser_Generator.Help,
      Command_Line_Parser_Generator.Identifier_Set,
      Command_Line_Parser_Generator.Mercurial,
      Command_Line_Parser_Generator.Procedure_Declaration,
@@ -264,18 +265,36 @@ begin
                              (+Package_Name) & ".");
          Set_Exit_Status (Failure);
       else
-         Templates.Create (Target_Directory => "generated");
+         declare
+            External_Put_Help  : Boolean renames Help.Generate_Help_Texts
+                                                   (Package_Declaration);
+            External_Show_Help : Boolean renames Help.Generate_Show_Help
+                                                   (Package_Declaration);
+         begin
+            Templates.Create (Target_Directory => "generated");
 
-         Templates.Runner        (Package_Name => +Package_Name);
-         Templates.Parser        (Package_Name => +Package_Name);
-         Templates.Argument_Type (Package_Name => +Package_Name);
-         Templates.Argument_List (Package_Name => +Package_Name);
-         Templates.Key_List      (Package_Name => +Package_Name);
-         Templates.Profiles      (Package_Name => +Package_Name,
-                                  Procedures   => Profiles);
+            Templates.Runner        (Package_Name       => +Package_Name,
+                                     External_Put_Help  => External_Put_Help);
+            Templates.Parser        (Package_Name       => +Package_Name);
+            Templates.Argument_Type (Package_Name       => +Package_Name);
+            Templates.Argument_List (Package_Name       => +Package_Name);
+            Templates.Key_List      (Package_Name       => +Package_Name);
+            Templates.Profiles      (Package_Name       => +Package_Name,
+                                     Procedures         => Profiles,
+                                     External_Show_Help => External_Show_Help);
 
-         Templates.Zsh_Command_Completion (Package_Name => +Package_Name,
-                                           Procedures   => Profiles);
+            Templates.Zsh_Command_Completion (Package_Name => +Package_Name,
+                                              Procedures   => Profiles);
+
+            if External_Put_Help then
+               Templates.Put_Help   (Package_Name       => +Package_Name);
+            end if;
+
+            if External_Show_Help then
+               Templates.Show_Help  (Package_Name       => +Package_Name,
+                                     External_Put_Help  => External_Put_Help);
+            end if;
+         end;
       end if;
    exception
       when others =>

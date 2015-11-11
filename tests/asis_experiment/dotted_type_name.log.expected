@@ -1,6 +1,6 @@
 package Dotted_Type_Name is
 
-procedure Trim (Sides : in     Ada.Strings.Trim_End := Ada.Strings.Both);
-procedure Trim_More (Prefix : in     Standard.String; Side : in     Ada.Strings.Trim_End := Both);
+   procedure Trim (Sides : in     Ada.Strings.Trim_End := Ada.Strings.Both);
+   procedure Trim_More (Prefix : in     Standard.String; Side : in     Ada.Strings.Trim_End := Both);
 
 end Dotted_Type_Name;

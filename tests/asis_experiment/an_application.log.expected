@@ -1,6 +1,6 @@
 package An_Application is
 
-procedure Show_Help (Help : in     Standard.Boolean);
-procedure Run_Interactive;
+   procedure Show_Help (Help : in     Standard.Boolean);
+   procedure Run_Interactive;
 
 end An_Application;
