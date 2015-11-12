@@ -25,4 +25,6 @@ package Command_Line_Parser_Generator.Utilities is
 
    function Static_Match_With_Character
      (The_Subtype : in Asis.Declaration) return Boolean;
+
+   function To_Ada_Source (Item : in Source_Text) return Wide_String;
 end Command_Line_Parser_Generator.Utilities;

@@ -287,7 +287,9 @@ begin
                                               Procedures   => Profiles);
 
             if External_Put_Help then
-               Templates.Put_Help   (Package_Name       => +Package_Name);
+               Templates.Put_Help   (Package_Name       => +Package_Name,
+                                     Procedures         => Profiles,
+                                     External_Show_Help => External_Show_Help);
             end if;
 
             if External_Show_Help then
