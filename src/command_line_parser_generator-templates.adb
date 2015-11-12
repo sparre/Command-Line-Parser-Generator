@@ -788,6 +788,7 @@ package body Command_Line_Parser_Generator.Templates is
       end if;
 
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Boolean := False) is");
+      Put_Line (File => Target, Item => "   pragma Unreferenced (Help);");
       Put_Line (File => Target, Item => "begin");
       Put_Line (File => Target, Item => "   " & Package_Name &".Put_Help (File => Ada.Text_IO.Standard_Output);");
       Put_Line (File => Target, Item => "end " & Package_Name & ".Show_Help;");
