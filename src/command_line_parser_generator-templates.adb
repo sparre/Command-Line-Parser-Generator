@@ -654,7 +654,6 @@ package body Command_Line_Parser_Generator.Templates is
                             File => Target);
       Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "with Ada.Command_Line;");
       Put_Line (File => Target, Item => "with Ada.Text_IO;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Put_Help (File : in     Ada.Text_IO.File_Type);");
@@ -663,6 +662,8 @@ package body Command_Line_Parser_Generator.Templates is
       Create_Body (Name => Package_Name & ".Put_Help",
                    File => Target);
       Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "with Ada.Command_Line;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "procedure " & Package_Name & ".Put_Help (File : in     Ada.Text_IO.File_Type) is");
       Put_Line (File => Target, Item => "   use Ada.Command_Line, Ada.Text_IO;");
