@@ -19,6 +19,11 @@ package Command_Line_Parser_Generator.Utilities is
                            return Boolean;
    function Enumeration_Values (Type_Declaration : in Asis.Declaration)
                                return Identifier_Set.Instance;
+   function Enumeration_Value_Count (Type_Declaration : in Asis.Declaration)
+                                    return Natural;
+
+   function Is_A_Flag (Type_Declaration : in Asis.Declaration)
+                      return Boolean;
 
    function Is_String_Compatible (Type_Declaration : in Asis.Declaration)
                                  return Boolean;

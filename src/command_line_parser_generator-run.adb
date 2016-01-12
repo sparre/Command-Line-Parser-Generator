@@ -105,6 +105,7 @@ begin
 
                   A_Formal_Parameter : Formal_Parameter.Instance :=
                     (Name              => +"<formal parameter>",
+                     Flag              => False,
                      Image_Function    => +"'Image",
                      Value_Function    => +"'Value",
                      Default_Value     => +"<default value>",
@@ -145,6 +146,8 @@ begin
                            Type_Of_Parameter : constant Asis.Declaration :=
                              Object_Declaration_View (Parameter);
                         begin
+                           A_Formal_Parameter.Flag :=
+                             Is_A_Flag (Type_Of_Parameter);
                            A_Formal_Parameter.Type_Name :=
                              +Full_Defining_Name (Type_Of_Parameter);
                         end Full_Type_Name;
@@ -162,8 +165,18 @@ begin
 
                                  A_Formal_Parameter.Default_Value := +"";
                               when An_Expression =>
-                                 A_Formal_Parameter.Default_Value :=
-                                   +Trim (Element_Image (Value));
+                                 if A_Formal_Parameter.Flag then
+                                    Put_Line (File => Standard_Error,
+                                              Item => Debug_Image (Value));
+                                    Put_Line (File => Standard_Error,
+                                              Item => "Flags shouldn't have " &
+                                                      "a default value.");
+                                    Set_Exit_Status (Failure);
+                                    return;
+                                 else
+                                    A_Formal_Parameter.Default_Value :=
+                                      +Trim (Element_Image (Value));
+                                 end if;
                               when others =>
                                  Put_Line (File => Standard_Error,
                                            Item => Debug_Image (Value));
@@ -204,9 +217,7 @@ begin
                            P : Formal_Parameter.Instance
                                  renames A_Formal_Parameter;
                         begin
-                           if P.Type_Name = "Standard.Boolean" and
-                              P.Default_Value = "False"
-                           then
+                           if P.Flag then
                               P.Zsh_Pattern := +Flag;
                            elsif P.Type_Name = Package_Name & ".File_Name" then
                               P.Zsh_Pattern := +Files;

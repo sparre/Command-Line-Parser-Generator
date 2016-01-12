@@ -21,9 +21,7 @@ package body Web_Site_Generator is
       New_Line (File);
    end Put_Help;
 
-   procedure Run (Run : in     Flag) is
-      pragma Unreferenced (Run);
-
+   procedure Run is
       use Ada.Text_IO;
    begin
       Put_Line ("Run;");
