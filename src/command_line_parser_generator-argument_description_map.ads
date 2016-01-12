@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with
   Command_Line_Parser_Generator.Identifier_Matrix;
 

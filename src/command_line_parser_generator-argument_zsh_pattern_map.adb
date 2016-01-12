@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 package body Command_Line_Parser_Generator.Argument_Zsh_Pattern_Map is
    procedure Append (Container : in out Instance;
                      Key       : in     Source_Text;

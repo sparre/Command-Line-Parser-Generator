@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with
   Ada.Containers.Hashed_Sets;
 

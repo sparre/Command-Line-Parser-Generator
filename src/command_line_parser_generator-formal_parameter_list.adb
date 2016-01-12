@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 package body Command_Line_Parser_Generator.Formal_Parameter_List is
    function Image (Item : in Instance) return Wide_String is
       Buffer : Source_Text;

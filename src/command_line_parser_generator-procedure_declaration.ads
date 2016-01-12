@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with Command_Line_Parser_Generator.Formal_Parameter_List;
 
 package Command_Line_Parser_Generator.Procedure_Declaration is

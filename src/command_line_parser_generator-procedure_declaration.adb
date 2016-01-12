@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 package body Command_Line_Parser_Generator.Procedure_Declaration is
    function Image (Item : in Instance) return Wide_String is
    begin
