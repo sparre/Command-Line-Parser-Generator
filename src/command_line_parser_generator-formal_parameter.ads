@@ -1,9 +1,14 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with Command_Line_Parser_Generator.Zsh_Argument_Pattern;
 
 package Command_Line_Parser_Generator.Formal_Parameter is
    type Instance is tagged
       record
          Name           : Source_Text;
+         Flag           : Boolean;
          Image_Function : Source_Text;
          Value_Function : Source_Text;
          Default_Value  : Source_Text;

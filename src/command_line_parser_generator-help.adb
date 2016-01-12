@@ -1,8 +1,10 @@
-with
-  Asis.Declarations;
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
 
-with
-  Command_Line_Parser_Generator.Utilities;
+with Asis.Declarations;
+
+with Command_Line_Parser_Generator.Utilities;
 
 package body Command_Line_Parser_Generator.Help is
    function Is_Put_Help_Procedure (Item : in Procedure_Specification)

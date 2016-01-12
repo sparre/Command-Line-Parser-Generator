@@ -1,6 +1,9 @@
-with
-  Ada.Characters.Conversions,
-  Ada.Strings.Equal_Case_Insensitive;
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
+with Ada.Characters.Conversions,
+     Ada.Strings.Equal_Case_Insensitive;
 
 function Wide_Unbounded_Equal_Case_Insensitive
   (Left, Right : in Ada.Strings.Wide_Unbounded.Unbounded_Wide_String)

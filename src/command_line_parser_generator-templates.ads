@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with Command_Line_Parser_Generator.Procedure_Declaration_List;
 
 private
@@ -54,5 +58,5 @@ private
                           Prefix  : in     Wide_String;
                           First   : in     Boolean);
 
-   function Show_Help return Procedure_Declaration.Instance;
+   function Show_Help (Package_Name : Wide_String) return Procedure_Declaration.Instance;
 end Command_Line_Parser_Generator.Templates;

@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 package body Command_Line_Parser_Generator.Argument_Description_Map is
    function Image (Container : in     Instance;
                    Key       : in     Source_Text) return Wide_String is

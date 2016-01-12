@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with Ada.Characters.Conversions,
      Ada.Characters.Handling,
      Ada.Containers,
@@ -372,6 +376,8 @@ package body Command_Line_Parser_Generator.Templates is
       Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "package " & Package_Name & ".Command_Line_Parser is");
+      Put_Line (File => Target, Item => "   type Flag is (Present);");
+      New_Line (File => Target);
       Put_Line (File => Target, Item => "   function Initialised return Boolean;");
       New_Line (File => Target);
       Put_Line (File => Target, Item => "   pragma Warnings (Off);");
@@ -494,7 +500,7 @@ package body Command_Line_Parser_Generator.Templates is
       Target : File_Type;
    begin
       if External_Show_Help then
-         List.Append (Show_Help);
+         List.Append (Show_Help (Package_Name));
       end if;
 
       pragma Style_Checks ("-M120");
@@ -645,7 +651,7 @@ package body Command_Line_Parser_Generator.Templates is
       Target : File_Type;
    begin
       if External_Show_Help then
-         List.Append (Show_Help);
+         List.Append (Show_Help (Package_Name));
       end if;
 
       pragma Style_Checks ("-M160");
@@ -772,7 +778,9 @@ package body Command_Line_Parser_Generator.Templates is
                             File => Target);
       Put_Line (File => Target, Item => "pragma Style_Checks (""-M0"");");
       New_Line (File => Target);
-      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Boolean := False);");
+      Put_Line (File => Target, Item => "with " & Package_Name & ".Command_Line_Parser;");
+      New_Line (File => Target);
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Command_Line_Parser.Flag);");
       Close (File => Target);
 
       Create_Body (Name => Package_Name & ".Show_Help",
@@ -787,7 +795,7 @@ package body Command_Line_Parser_Generator.Templates is
          New_Line (File => Target);
       end if;
 
-      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Boolean := False) is");
+      Put_Line (File => Target, Item => "procedure " & Package_Name & ".Show_Help (Help : in     Command_Line_Parser.Flag) is");
       Put_Line (File => Target, Item => "   pragma Unreferenced (Help);");
       Put_Line (File => Target, Item => "begin");
       Put_Line (File => Target, Item => "   " & Package_Name &".Put_Help (File => Ada.Text_IO.Standard_Output);");
@@ -797,7 +805,7 @@ package body Command_Line_Parser_Generator.Templates is
       pragma Style_Checks ("-M79");
    end Show_Help;
 
-   function Show_Help return Procedure_Declaration.Instance
+   function Show_Help (Package_Name : Wide_String) return Procedure_Declaration.Instance
    is
       use all type Formal_Parameter_List.Instance;
       use Zsh_Argument_Pattern;
@@ -805,10 +813,11 @@ package body Command_Line_Parser_Generator.Templates is
       return (Name              => +"Show_Help",
               Formal_Parameters =>
                 To_Vector ((Name           => +"Help",
-                            Image_Function => +"Standard.Boolean'Image",
-                            Value_Function => +"Standard.Boolean'Value",
-                            Default_Value  => +"False",
-                            Type_Name      => +"Standard.Boolean",
+                            Flag           => True,
+                            Image_Function => +(Package_Name & ".Command_Line_Parser.Flag'Image"),
+                            Value_Function => +(Package_Name & ".Command_Line_Parser.Flag'Value"),
+                            Default_Value  => +"",
+                            Type_Name      => +(Package_Name & ".Command_Line_Parser.Flag"),
                             Zsh_Pattern    => Create (Flag)),
                            1));
    end Show_Help;

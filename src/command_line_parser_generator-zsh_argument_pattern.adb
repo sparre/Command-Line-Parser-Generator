@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 package body Command_Line_Parser_Generator.Zsh_Argument_Pattern is
    function "or" (Left, Right : Instance) return Instance is
       use all type Identifier_Set.Instance;

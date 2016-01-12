@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 with Ada.Wide_Text_IO;
 
 with Asis.Declarations,
@@ -25,6 +29,66 @@ package body Command_Line_Parser_Generator.Utilities is
            with "Defining_Name: Declaration has multiple names.";
       end if;
    end Defining_Name;
+
+   function Enumeration_Value_Count (Type_Declaration : in Asis.Declaration)
+                                    return Natural
+   is
+      use Ada.Wide_Text_IO;
+      use Asis.Declarations, Asis.Definitions, Asis.Elements, Asis.Expressions,
+          Asis.Text;
+      use all type Asis.Declaration_Kinds, Asis.Type_Kinds;
+
+      Name        : constant Asis.Element :=
+                      Name_Definition (Type_Declaration);
+      Declaration : constant Asis.Element :=
+                      Enclosing_Element (Name);
+      Definition  : constant Asis.Element :=
+                      Type_Declaration_View (Declaration);
+      Literals    : constant Asis.Declaration_List :=
+                      Enumeration_Literal_Declarations (Definition);
+   begin
+      if Full_Defining_Name (Type_Declaration) = "Standard.Boolean" then
+         return 2;
+      elsif Declaration_Kind (Declaration) = An_Ordinary_Type_Declaration
+            and then
+            Type_Kind (Definition) = An_Enumeration_Type_Definition
+      then
+         return Literals'Length;
+      else
+         raise Constraint_Error
+           with "Enumeration_Value_Count called with something, which isn't " &
+                "an enumeration type declaration.";
+      end if;
+   exception
+      when others =>
+         Put_Line (File => Standard_Error,
+                   Item => "Exception raised in Enumeration_Values:");
+
+         Put_Line (File => Standard_Error,
+                   Item => "   Type of formal parameter: '" &
+                     Element_Image (Type_Declaration) & "'");
+
+         Put_Line (File => Standard_Error,
+                   Item => "   Type name: '" &
+                     Element_Image (Name) & "'");
+
+         Put_Line (File => Standard_Error,
+                   Item => "   Type declaration: '" &
+                     Element_Image (Declaration) & "'");
+         Put_Line (File => Standard_Error,
+                   Item => Debug_Image (Declaration));
+         New_Line (File => Standard_Error);
+
+         Put_Line (File => Standard_Error,
+                   Item => "   Type declaration view: '" &
+                     Element_Image (Definition) &
+                     "'");
+         Put_Line (File => Standard_Error,
+                   Item => Debug_Image (Definition));
+         New_Line (File => Standard_Error);
+
+         raise;
+   end Enumeration_Value_Count;
 
    function Enumeration_Values (Type_Declaration : in Asis.Declaration)
                                return Identifier_Set.Instance is
@@ -208,6 +272,16 @@ package body Command_Line_Parser_Generator.Utilities is
       Put_Line ("end Reader;");
       Put_Line ("----------------------");
    end Generate_Reader;
+
+   function Is_A_Flag (Type_Declaration : in Asis.Declaration)
+                      return Boolean
+   is
+   begin
+      return
+        Is_Enumeration (Type_Declaration)
+        and then
+        Enumeration_Value_Count (Type_Declaration) = 1;
+   end Is_A_Flag;
 
    function Is_Enumeration (Type_Declaration : in Asis.Declaration)
                            return Boolean is

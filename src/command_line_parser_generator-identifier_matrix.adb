@@ -1,3 +1,7 @@
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
 package body Command_Line_Parser_Generator.Identifier_Matrix is
    procedure Append (Container : in out Instance;
                      Key       : in     Source_Text;

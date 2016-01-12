@@ -1,6 +1,9 @@
-with
-  Asis,
-  Asis.Elements;
+--  Copyright: JSA Research & Innovation <info@jacob-sparre.dk>
+--  License:   Beer Ware
+pragma License (Unrestricted);
+
+with Asis,
+     Asis.Elements;
 
 package Command_Line_Parser_Generator.Help is
    use Asis, Asis.Elements;
