@@ -2,9 +2,8 @@
 --  License:   Beer Ware
 pragma License (Unrestricted);
 
-with
-  Asis,
-  Asis.Elements;
+with Asis,
+     Asis.Elements;
 
 package Command_Line_Parser_Generator.Help is
    use Asis, Asis.Elements;

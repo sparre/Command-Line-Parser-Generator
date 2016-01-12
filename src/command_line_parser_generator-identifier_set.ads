@@ -2,12 +2,10 @@
 --  License:   Beer Ware
 pragma License (Unrestricted);
 
-with
-  Ada.Containers.Hashed_Sets;
+with Ada.Containers.Hashed_Sets;
 
-with
-  Wide_Unbounded_Equal_Case_Insensitive,
-  Wide_Unbounded_Hash_Case_Insensitive;
+with Wide_Unbounded_Equal_Case_Insensitive,
+     Wide_Unbounded_Hash_Case_Insensitive;
 
 package Command_Line_Parser_Generator.Identifier_Set is
    use type Source_Text;

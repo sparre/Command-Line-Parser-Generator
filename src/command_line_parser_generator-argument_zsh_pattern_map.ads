@@ -2,13 +2,11 @@
 --  License:   Beer Ware
 pragma License (Unrestricted);
 
-with
-  Ada.Containers.Hashed_Maps;
+with Ada.Containers.Hashed_Maps;
 
-with
-  Command_Line_Parser_Generator.Zsh_Argument_Pattern,
-  Wide_Unbounded_Equal_Case_Insensitive,
-  Wide_Unbounded_Hash_Case_Insensitive;
+with Command_Line_Parser_Generator.Zsh_Argument_Pattern,
+     Wide_Unbounded_Equal_Case_Insensitive,
+     Wide_Unbounded_Hash_Case_Insensitive;
 
 package Command_Line_Parser_Generator.Argument_Zsh_Pattern_Map is
    use type Source_Text;

@@ -2,9 +2,8 @@
 --  License:   Beer Ware
 pragma License (Unrestricted);
 
-with
-  Ada.Containers,
-  Ada.Strings.Wide_Unbounded;
+with Ada.Containers,
+     Ada.Strings.Wide_Unbounded;
 
 function Wide_Unbounded_Hash_Case_Insensitive
   (Key : in Ada.Strings.Wide_Unbounded.Unbounded_Wide_String)

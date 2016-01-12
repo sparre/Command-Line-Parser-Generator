@@ -2,11 +2,9 @@
 --  License:   Beer Ware
 pragma License (Unrestricted);
 
-with
-  Asis.Declarations;
+with Asis.Declarations;
 
-with
-  Command_Line_Parser_Generator.Utilities;
+with Command_Line_Parser_Generator.Utilities;
 
 package body Command_Line_Parser_Generator.Help is
    function Is_Put_Help_Procedure (Item : in Procedure_Specification)
