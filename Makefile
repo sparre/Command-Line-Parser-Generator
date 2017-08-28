@@ -6,32 +6,30 @@ LC_PROJECT = $(shell echo -n "${PROJECT}" | tr '[:upper:].' '[:lower:]-')
 PROJECT_ROOT_SOURCE = src/$(LC_PROJECT).ads
 
 HG_STATE_SOURCE     = src/$(LC_PROJECT)-mercurial.ads
-HG_MODIFIER         = `test $$(hg status | wc -c) -gt 0 && echo "plus changes" || echo "as committed"`
-HG_REVISION         = `hg tip --template '{node}' 2>/dev/null || echo N/A`
+HG_MODIFIER         = `test $$(hg status | wc -c || echo 0) -gt 0 && echo "plus changes" || echo "as committed"`
+HG_REVISION         = `hg tip --template '{node}' 2>/dev/null || echo N/A_____________________________________`
 GENERATED_SOURCES  += $(HG_STATE_SOURCE)
 
 EXECUTABLES=$(GENERATED_EXECUTABLES) $(SCRIPTS)
 
 PREFIX ?= $(HOME)
 
-PROCESSORS ?= `(test -f /proc/cpuinfo && grep -c ^processor /proc/cpuinfo) || echo 1`
-
 REPOSITORY_STATE  = .hg/dirstate
 REPOSITORY_CONFIG = .hg/hgrc
 
-all: build metrics
+all: build
 
 build: build-depends fix-whitespace $(GENERATED_SOURCES)
-	gnatmake -j$(PROCESSORS) -p -P $(LC_PROJECT)
+	gnatmake -j0 -p -P $(LC_PROJECT)
 
-test: build metrics $(EXECUTABLES)
+test: build $(EXECUTABLES)
 	@mkdir -p tests/results
 	@./tests/build
 	@./tests/run
 
 install: build test
-	@strip $(GENERATED_EXECUTABLES)
-	install -D -t $(DESTDIR)$(PREFIX)/bin/ $(EXECUTABLES)
+	@if [ ! -z "$(GENERATED_EXECUTABLES)" ]; then strip $(GENERATED_EXECUTABLES) ; fi
+	@if [ ! -z "$(EXECUTABLES)"           ]; then install -D -t $(DESTDIR)$(PREFIX)/bin/ $(EXECUTABLES) ; fi
 
 clean:
 	find . \( -name "*~" -o -name "*.bak" -o -name "*.o" -o -name "*.ali" -o -name "*.adt" \) -type f -print0 | xargs -0 /bin/rm || true
@@ -56,9 +54,6 @@ build-depends:
 fix-whitespace:
 	@find src tests -name '*.ad?' | xargs egrep -l '	| $$' | grep -v '^b[~]' | xargs perl -i -lpe 's|	|        |g; s| +$$||g' 2>/dev/null || true
 
-metrics:
-	@gnat metric -j$(PROCESSORS) -P $(LC_PROJECT)
-
 $(REPOSITORY_CONFIG):
 	@mkdir -p $(shell dirname $(REPOSITORY_CONFIG))
 	@touch $(REPOSITORY_CONFIG)
@@ -76,5 +71,5 @@ $(HG_STATE_SOURCE): Makefile $(REPOSITORY_CONFIG) $(REPOSITORY_STATE) $(PROJECT_
 
 -include Makefile.project_rules
 
-.PHONY: all build test install clean distclean build-depends fix-whitespace metrics
+.PHONY: all build test install clean distclean build-depends fix-whitespace
 
