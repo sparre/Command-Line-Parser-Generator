@@ -9,6 +9,6 @@ pipelines:
   default:
     - step:
         script:
-          - apt-get install --quiet=2 mercurial parallel libgnatcoll1.6-dev
+          - apt-get install --quiet=2 mercurial parallel libgnatcoll1.6-dev libasis2014-dev
           - OS_VERSION=unix make build
           - OS_VERSION=unix make test
