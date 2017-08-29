@@ -1,8 +1,6 @@
-/bin/zsh
-parallel
+/bin/bash
 gnat
 gnatmake
-gnatmetric
 hg
 perl
 wget

@@ -16,10 +16,10 @@ ahven-update: ahven
 DEPENDENCY_UPDATES += ahven-update
 
 adacontrol:
-	wget --timestamping https://sourceforge.net/projects/adacontrol/files/adactl-1.17r3-src.tgz
-	tar xzvf adactl-1.17r3-src.tgz
-	rm -f    adactl-1.17r3-src.tgz
-	mv       adactl-1.17r3         adacontrol
+	wget --timestamping https://sourceforge.net/projects/adacontrol/files/adactl-1.18r9-src.tgz
+	tar xzvf adactl-1.18r9-src.tgz
+	rm -f    adactl-1.18r9-src.tgz
+	mv       adactl-1.18r9         adacontrol
 
 update: $(DEPENDENCY_UPDATES)
 

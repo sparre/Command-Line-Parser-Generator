@@ -11,9 +11,9 @@ the available procedures.
 Build dependencies
 ------------------
 
-+ Zsh
-* GNU Parallel
-* GNAT (including the `gnatmetric` tool)
++ Bash
+* xargs or GNU Parallel
+* GNAT
 * Mercurial (hg)
 * Perl
 * Wget
@@ -24,9 +24,7 @@ Build dependencies
 Installing
 ----------
 
-```
-   OS_VERSION=unix make install
-```
+    OS_VERSION=unix make install
 
 Builds and tests the executable before installing it in
 "${DESTDIR}${PREFIX}/bin" (where "${PREFIX}" defaults to "${HOME}").
