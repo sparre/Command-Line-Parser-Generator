@@ -79,7 +79,7 @@ the person who ran the tool (and thus not owned by JSA Research & Innovation).
 Links
 -----
 
-If you want to find free Ada tools or libraries [AdaIC][2] is an excellent
+If you want to find free Ada tools or libraries, [AdaIC][2] is an excellent
 starting point.  You can also take a look at
 [my other source text repositories][3] or [my web site][4].
 
