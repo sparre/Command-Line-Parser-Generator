@@ -12,9 +12,9 @@ Build dependencies
 ------------------
 
 + Bash
-+ xargs or GNU Parallel
++ GNU Parallel (or `xargs`)
 + GNAT
-+ Mercurial (hg)
++ Mercurial (`hg`)
 + Perl
 + Wget
 + Tar
