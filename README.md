@@ -1,5 +1,5 @@
-Command Line Parser Generator [1]
-=================================
+[Command Line Parser Generator][1]
+==================================
 
 A tool for generating a driver intended to call one of the procedures declared
 in a package specification, depending on the parameters passed to the driver.
@@ -12,13 +12,13 @@ Build dependencies
 ------------------
 
 + Bash
-* xargs or GNU Parallel
-* GNAT
-* Mercurial (hg)
-* Perl
-* Wget
-* Tar
-* ASIS (the Ada Semantic Interface)
++ xargs or GNU Parallel
++ GNAT
++ Mercurial (hg)
++ Perl
++ Wget
++ Tar
++ ASIS (the Ada Semantic Interface)
 
 
 Installing
@@ -36,9 +36,7 @@ Installing may also work on Windows, if you substitute "OS_VERSION=unix" with
 Testing
 -------
 
-```
-   OS_VERSION=unix make test
-```
+    OS_VERSION=unix make test
 
 Builds and tests the executable.
 
@@ -46,9 +44,7 @@ Builds and tests the executable.
 Building
 --------
 
-```
-   OS_VERSION=unix make build
-```
+    OS_VERSION=unix make build
 
 Builds the executable.
 
@@ -83,9 +79,9 @@ the person who ran the tool (and thus not owned by JSA Research & Innovation).
 Links
 -----
 
-If you want to find free Ada tools or libraries AdaIC [2] is an excellent
-starting point.  You can also take a look at my other source text
-repositories [3] or my web site [4].
+If you want to find free Ada tools or libraries [AdaIC][2] is an excellent
+starting point.  You can also take a look at
+[my other source text repositories][3] or [my web site][4].
 
 [1] Source text repository:
     http://repositories.jacob-sparre.dk/command-line-parser-generator
